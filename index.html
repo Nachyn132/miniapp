@@ -10,20 +10,26 @@
     
     <style>
         :root {
+            /* Базовые темные цвета */
             --bg: #0a0f1a;
             --bg2: #131a2a;
             --card: #111726;
             --border: #1e293b;
-            --accent: #d97b3f;
-            --accent-soft: rgba(217,123,63,0.12);
+            
+            /* Единая цветовая схема */
+            --blue: #3B82F6;       /* Основной синий для кнопок и ссылок */
+            --blue-soft: rgba(59, 130, 246, 0.15);
+            --blue-hover: #2563EB;
+            
+            --orange: #F59E0B;     /* Акцентный оранжевый для иконок и выделений */
+            --orange-soft: rgba(245, 158, 11, 0.12);
+            
+            /* Текст и статусы */
             --text: #f8fafc;
             --text2: #94a3b8;
             --text3: #64748b;
             --ok: #10B981;
-            --warn: #F59E0B;
             --err: #EF4444;
-            --blue-btn: #2563EB;
-            --blue-text: #3B82F6;
             
             --nav-height: 60px;
         }
@@ -47,114 +53,86 @@
         
         .serif { font-family: 'Fraunces', serif; font-weight: 600; }
         
-        #app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+        #app-container { width: 100%; height: 100%; display: flex; flex-direction: column; }
+        .content-area { flex: 1; position: relative; overflow: hidden; }
+        .wrap { padding: 16px; max-width: 600px; margin: 0 auto; }
 
-        .content-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .wrap { 
-            padding: 16px; 
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
+        /* Экраны */
         .view { 
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 110px; 
-            opacity: 0; 
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            z-index: 1;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 110px; 
+            opacity: 0; visibility: hidden; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 1;
         }
-        
-        .view.active { 
-            opacity: 1; 
-            visibility: visible;
-            z-index: 2;
-        }
+        .view.active { opacity: 1; visibility: visible; z-index: 2; }
 
+        /* Кнопки (Теперь все основные кнопки — Синие) */
         .btn { 
-            padding: 12px 14px; 
-            border-radius: 10px; 
-            font-weight: 600; 
-            font-size: 14px; 
-            border: none; 
-            cursor: pointer;
-            transition: opacity 0.2s;
-            text-align: center;
+            padding: 12px 16px; border-radius: 12px; font-weight: 500; font-size: 14px; 
+            border: none; cursor: pointer; transition: 0.2s; text-align: center;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn:active { opacity: 0.8; }
-        .btn-primary { background: var(--accent); color: #14120f; width: 100%; }
+        .btn:active { opacity: 0.8; transform: scale(0.98); }
+        .btn-primary { background: var(--blue); color: #ffffff; width: 100%; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); width: 100%; }
+        .btn-dark { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); }
         .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
 
-        .card { 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            border-radius: 16px; 
-            padding: 20px; 
-            margin-bottom: 16px; 
-        }
-        
-        .card h3 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; }
-        .card h3 i { color: var(--accent); margin-right: 8px; }
-        .card-title-small { font-size: 16px; font-weight: 500; margin-bottom: 16px; }
+        /* Карточки */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+        .card h3 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; font-weight: 500; }
+        .card h3 i { color: var(--orange); margin-right: 8px; font-size: 18px; } /* Иконки в заголовках — Оранжевые */
+        .card-title-small { font-size: 14px; color: var(--text2); margin-bottom: 12px; }
         .page-header { padding: 16px 0 8px 0; font-size: 24px; margin-bottom: 16px; }
 
-        /* Тарифы */
-        .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .plan { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; }
-        .plan.featured { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--card) 60%); }
-        .plan-top { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px; }
-        .plan-tag { font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
-        .plan-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
-        .plan-desc { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.3; min-height: 28px; }
-        .plan-price-block { margin-top: 8px; }
-        .plan-price { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text); }
-        .plan-specs { display: flex; flex-direction: column; gap: 8px; padding: 10px 0; margin: auto 0 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .spec { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
-        .spec i { color: var(--accent); font-size: 12px; width: 14px; text-align: center; }
+        /* Инпуты */
+        .form-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .form-input { 
+            flex: 1; min-width: 140px; background: var(--bg2); border: 1px solid var(--border); 
+            border-radius: 12px; padding: 12px 14px; color: var(--text); font-size: 14px; transition: 0.2s; 
+        }
+        .form-input:focus { border-color: var(--blue); }
 
-        /* Мои подписки */
-        .sub-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--accent); }
-        .sub-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        /* ==========================================
+           ГЛАВНАЯ (Мои подписки)
+           ========================================== */
+        .sub-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--blue); }
+        .sub-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .sub-name { font-weight: 600; font-size: 16px; }
-        .config-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: var(--text2); word-break: break-all; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .config-box i { padding: 4px; color: var(--accent); cursor: pointer; }
-        .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .config-box { 
+            background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; 
+            font-family: monospace; font-size: 12px; color: var(--text2); margin-bottom: 16px; 
+            display: flex; justify-content: space-between; align-items: center; cursor: pointer;
+        }
+        .config-box i { color: var(--blue); font-size: 16px; }
+        .badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; }
         .badge-ok { background: rgba(16, 185, 129, 0.15); color: var(--ok); }
         .sub-actions { display: flex; gap: 8px; }
 
-        /* Баланс */
-        .balance-label { font-size: 13px; color: var(--text2); }
+        /* ==========================================
+           ТАРИФЫ
+           ========================================== */
+        .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .plan { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+        .plan.featured { border-color: var(--orange); background: linear-gradient(180deg, var(--orange-soft), var(--card) 60%); }
+        .plan-top { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 12px; }
+        .plan-tag { font-size: 10px; color: var(--orange); font-weight: 700; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .plan-name { font-size: 16px; font-weight: 600; line-height: 1.2; }
+        .plan-price-block { margin-top: 12px; }
+        .plan-price { font-family: 'Fraunces', serif; font-size: 20px; color: var(--text); }
+        .plan-specs { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; margin: auto 0 16px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .spec { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+        .spec i { color: var(--orange); font-size: 12px; width: 14px; text-align: center; }
+
+        /* ==========================================
+           БАЛАНС
+           ========================================== */
         .balance-val-large { font-size: 46px; font-weight: 700; color: var(--text); margin-top: 4px; line-height: 1; }
         .balance-val-large span { font-size: 22px; color: var(--text3); margin-left: 4px; font-weight: 500; }
-        .promo-input-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        .form-input { flex: 1; min-width: 140px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; outline: none; transition: 0.2s; }
-        .form-input:focus { border-color: var(--blue-btn); }
-        .btn-blue { background-color: var(--blue-btn); color: #ffffff; border: none; border-radius: 10px; padding: 0 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; height: 44px; }
-        .btn-blue:active { opacity: 0.8; }
-        .btn-dark { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 0 16px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; height: 44px; }
-        .btn-dark:active { background: rgba(255,255,255,0.1); }
         
         .payment-method { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; }
         .payment-method:active { background: rgba(255, 255, 255, 0.05); }
         .payment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-        .payment-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #8B5CF6, #3B82F6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .payment-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--blue), #1E3A8A); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
         .payment-title { font-size: 15px; font-weight: 600; }
         .payment-desc { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
         .payment-limits { font-size: 12px; color: var(--text3); }
@@ -172,7 +150,7 @@
         .tx-amount.minus { color: var(--text); font-weight: 600; }
 
         /* ==========================================
-           ЭКРАН РЕФЕРАЛОВ
+           РЕФЕРАЛЫ
            ========================================== */
         .ref-stats-grid { display: flex; gap: 12px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
         .ref-stats-grid::-webkit-scrollbar { display: none; }
@@ -182,111 +160,36 @@
         .ref-stat-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
         
         .text-green { color: var(--ok); }
-        .text-blue { color: var(--blue-text); }
+        .text-blue { color: var(--blue); }
         
-        .ref-link-label { font-size: 13px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; margin-top: 16px; }
-        .ref-link-label i { color: var(--blue-text); font-size: 14px; width: 16px; text-align: center; }
-        .ref-hint { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.4; }
+        .ref-link-label { font-size: 13px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; margin-top: 20px; }
+        .ref-link-label i { color: var(--blue); font-size: 16px; width: 20px; text-align: center; }
+        .ref-hint { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.5; }
 
         .terms-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 16px; }
         .term-item { display: flex; flex-direction: column; gap: 4px; }
         .term-label { font-size: 12px; color: var(--text3); }
         .term-val { font-size: 16px; font-weight: 600; }
 
-        .empty-ref { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 32px 10px 16px 10px; 
-        }
-        .empty-ref-icon { 
-            width: 60px; 
-            height: 60px; 
-            background: rgba(255, 255, 255, 0.04); 
-            border-radius: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 24px; 
-            color: var(--text3); 
-            margin-bottom: 16px; 
-        }
-        .empty-ref-text { 
-            color: var(--text3); 
-            font-size: 14px; 
-            text-align: center; 
-            line-height: 1.5;
-        }
+        .empty-ref { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 10px 16px 10px; }
+        .empty-ref-icon { width: 64px; height: 64px; background: rgba(255, 255, 255, 0.03); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--orange); margin-bottom: 16px; }
+        .empty-ref-text { color: var(--text2); font-size: 14px; text-align: center; line-height: 1.5; }
 
         /* ==========================================
-           ЭКРАН ПОДДЕРЖКИ
+           ПОДДЕРЖКА
            ========================================== */
-        .support-wrap {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: calc(100vh - 120px); /* Центрирование по вертикали с учетом меню */
-            padding: 16px;
-        }
-        
-        .support-card {
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            padding: 40px 24px;
-        }
-        
-        .support-icon-wrap {
-            width: 64px;
-            height: 64px;
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            color: var(--text2);
-            margin: 0 auto 20px auto;
-        }
-        
-        .support-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            color: var(--text);
-        }
-        
-        .support-desc {
-            color: var(--text2);
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 24px;
-        }
-        
-        .support-btn-large {
-            width: 100%;
-            height: 48px;
-            font-size: 15px;
-            margin-bottom: 24px;
-        }
-        
-        .support-email {
-            color: var(--text3);
-            font-size: 13px;
-        }
-        
-        .support-email a {
-            color: var(--blue-text);
-            text-decoration: none;
-            transition: opacity 0.2s;
-        }
-        
-        .support-email a:active {
-            opacity: 0.7;
-        }
+        .support-wrap { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 120px); padding: 16px; }
+        .support-card { width: 100%; max-width: 400px; text-align: center; padding: 40px 24px; }
+        .support-icon-wrap { width: 72px; height: 72px; background: var(--orange-soft); border-radius: 24px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--orange); margin: 0 auto 24px auto; }
+        .support-title { font-size: 22px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+        .support-desc { color: var(--text2); font-size: 14px; line-height: 1.5; margin-bottom: 32px; }
+        .support-btn-large { width: 100%; height: 50px; font-size: 15px; margin-bottom: 24px; }
+        .support-email { color: var(--text3); font-size: 13px; }
+        .support-email a { color: var(--blue); text-decoration: none; font-weight: 500; }
 
-        /* Навигация */
+        /* ==========================================
+           НАВИГАЦИЯ (Glassmorphism)
+           ========================================== */
         .bottom-nav {
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(19, 26, 42, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
@@ -297,8 +200,7 @@
 
         .nav-indicator {
             position: absolute; top: 6px; bottom: 6px; left: 0;
-            background: rgba(37, 99, 235, 0.15); /* Синеватая подсветка */
-            border: 1px solid var(--blue-text); border-radius: 18px; z-index: 0;
+            background: var(--blue-soft); border: 1px solid var(--blue); border-radius: 18px; z-index: 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: none; will-change: transform, width; 
         }
@@ -311,7 +213,7 @@
         
         .nav-item i { font-size: 18px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 500; }
-        .nav-item.active { color: var(--blue-text); }
+        .nav-item.active { color: var(--blue); }
         
     </style>
 </head>
@@ -342,15 +244,15 @@
                 <h1 class="page-header serif">Баланс</h1>
                 
                 <div class="card" style="padding: 24px 20px;">
-                    <div class="balance-label">Текущий баланс</div>
+                    <div class="card-title-small" style="margin-bottom: 4px;">Текущий баланс</div>
                     <div class="balance-val-large" id="balanceDisplay">0.00<span>₽</span></div>
                 </div>
 
                 <div class="card">
                     <div class="card-title-small">Промокод</div>
-                    <div class="promo-input-group">
+                    <div class="form-group">
                         <input type="text" class="form-input" placeholder="Введите промокод" id="promoCodeInput">
-                        <button class="btn-blue" onclick="Telegram.WebApp.showAlert('Промокод активирован')">Активировать</button>
+                        <button class="btn btn-primary" style="width: auto;" onclick="Telegram.WebApp.showAlert('Промокод активирован')">Активировать</button>
                     </div>
                 </div>
 
@@ -362,7 +264,7 @@
                             <div class="payment-title">ЮKassa</div>
                         </div>
                         <div class="payment-desc">Оплата банковской картой, СБП или ЮMoney через ЮKassa</div>
-                        <div class="payment-limits">1 до 100000 ₽</div>
+                        <div class="payment-limits">1 до 100 000 ₽</div>
                     </div>
                 </div>
 
@@ -383,7 +285,6 @@
             <div class="wrap">
                 <h1 class="page-header serif">Реферальная программа</h1>
                 
-                <!-- Статистика -->
                 <div class="ref-stats-grid">
                     <div class="ref-stat-card">
                         <div class="ref-stat-title">Всего рефералов</div>
@@ -400,35 +301,33 @@
                     </div>
                 </div>
 
-                <!-- Реферальные ссылки -->
                 <div class="card">
-                    <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 500; display: block;">Ваши реферальные ссылки</h3>
+                    <h3><i class="fas fa-link"></i>Ваши ссылки</h3>
                     
-                    <div class="ref-link-label" style="margin-top: 0;"><i class="fab fa-telegram-plane"></i> Ссылка на бота</div>
-                    <div class="promo-input-group">
+                    <div class="ref-link-label"><i class="fab fa-telegram-plane"></i> Ссылка на бота</div>
+                    <div class="form-group">
                         <input type="text" class="form-input" value="https://t.me/vpn_bot?start=ref123" readonly>
-                        <button class="btn-blue" onclick="copyText('https://t.me/vpn_bot?start=ref123', 'Ссылка на бота скопирована!')">
-                            <i class="far fa-copy"></i> Копировать
+                        <button class="btn btn-primary" style="width: auto;" onclick="copyText('https://t.me/vpn_bot?start=ref123', 'Ссылка на бота скопирована!')">
+                            <i class="far fa-copy"></i>
                         </button>
                     </div>
 
-                    <div class="ref-link-label"><i class="fas fa-link"></i> Ссылка на кабинет</div>
-                    <div class="promo-input-group">
+                    <div class="ref-link-label"><i class="fas fa-globe"></i> Ссылка на кабинет</div>
+                    <div class="form-group">
                         <input type="text" class="form-input" value="https://site.com/login?ref=123" readonly>
-                        <button class="btn-blue" onclick="copyText('https://site.com/login?ref=123', 'Ссылка скопирована!')">
-                            <i class="far fa-copy"></i> Копировать
+                        <button class="btn btn-primary" style="width: auto;" onclick="copyText('https://site.com/login?ref=123', 'Ссылка скопирована!')">
+                            <i class="far fa-copy"></i>
                         </button>
-                        <button class="btn-dark" onclick="shareRefLink()">
-                            <i class="fas fa-share-nodes"></i> Поделиться
+                        <button class="btn btn-dark" style="width: auto;" onclick="shareRefLink()">
+                            <i class="fas fa-share-nodes"></i>
                         </button>
                     </div>
 
                     <p class="ref-hint">Поделитесь ссылкой с друзьями. Когда они зарегистрируются и оплатят, вы получите 25% комиссии!</p>
                 </div>
 
-                <!-- Условия программы -->
                 <div class="card">
-                    <h3 style="font-size: 16px; margin-bottom: 20px; font-weight: 500; display: block;">Условия программы</h3>
+                    <h3><i class="fas fa-file-contract"></i>Условия программы</h3>
                     <div class="terms-grid">
                         <div class="term-item">
                             <div class="term-label">Комиссия</div>
@@ -449,10 +348,9 @@
                     </div>
                 </div>
 
-                <!-- Ваши рефералы -->
+                <!-- Блок "Ваши рефералы" -->
                 <div class="card">
-                    <h3 style="font-size: 16px; font-weight: 500; margin-bottom: 0;">Ваши рефералы</h3>
-                    
+                    <h3 style="margin-bottom: 0;">Ваши рефералы</h3>
                     <div class="empty-ref">
                         <div class="empty-ref-icon">
                             <i class="fas fa-user-group"></i>
@@ -476,11 +374,11 @@
                     <h2 class="support-title">Поддержка</h2>
                     <p class="support-desc">Для получения поддержки обратитесь к<br>@Nachyn132</p>
                     
-                    <button class="btn-blue support-btn-large" onclick="Telegram.WebApp.openTelegramLink('https://t.me/Nachyn132')">
+                    <button class="btn btn-primary support-btn-large" onclick="Telegram.WebApp.openTelegramLink('https://t.me/Nachyn132')">
                         Связаться с поддержкой
                     </button>
                     
-                    <p class="support-email">Или напишите на почту <a href="mailto:support@herbisvpn.com">support@herbisvpn.com</a></p>
+                    <p class="support-email">Или напишите на почту <br><a href="mailto:support@herbisvpn.com">support@herbisvpn.com</a></p>
                 </div>
             </div>
         </div>
@@ -545,7 +443,6 @@
         { id: 2, desc: 'Пополнение баланса', amount: 500, date: Date.now() - 10*86400000 },
     ];
 
-
     function switchTab(viewId, navElement) {
         if (navElement.classList.contains('active')) return;
 
@@ -576,16 +473,6 @@
         }
     }
 
-    function renderUserData() {
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            const nameEl = document.getElementById('tgName');
-            const idEl = document.getElementById('tgId');
-            if(nameEl) nameEl.textContent = `${user.first_name} ${user.last_name || ''}`.trim();
-            if(idEl) idEl.textContent = `ID: ${user.id}`;
-        }
-    }
-
     function renderBalance() {
         document.getElementById('balanceDisplay').innerHTML = `${userBalance}.00<span>₽</span>`;
     }
@@ -604,7 +491,7 @@
                     </div>
                     <div class="config-box" onclick="copyText('${s.link}', 'Ссылка скопирована!')">
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 85%;">${s.link}</span>
-                        <i class="fas fa-copy"></i>
+                        <i class="far fa-copy"></i>
                     </div>
                     <div class="sub-actions">
                         <button class="btn btn-primary btn-sm" onclick="Telegram.WebApp.showAlert('Продление тарифа')" style="flex: 1;">Продлить</button>
@@ -630,7 +517,7 @@
                     </div>
                 </div>
                 <div class="plan-specs">
-                    <div class="spec"><i class="fas fa-calendar"></i>${p.duration}</div>
+                    <div class="spec"><i class="far fa-calendar-alt"></i>${p.duration}</div>
                     <div class="spec"><i class="fas fa-infinity"></i>Тариф: ∞</div>
                 </div>
                 <button class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'}" onclick="buyPlan(${p.id}, '${p.name}', ${p.price})">Купить</button>
@@ -734,7 +621,6 @@
         }
     });
 
-    renderUserData();
     renderBalance();
     renderSubscriptions();
     renderPlans();
