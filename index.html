@@ -11,7 +11,6 @@
     
     <style>
         :root {
-            /* Ваши жестко заданные фирменные цвета */
             --bg: #14120f;
             --bg2: #1c1915;
             --card: #201d18;
@@ -24,6 +23,7 @@
             --ok: #7fae7a;
             --warn: #d9a63f;
             --err: #c2665b;
+            --blue-btn: #1D4ED8;
             
             --nav-height: 60px;
         }
@@ -32,8 +32,8 @@
             margin: 0; 
             padding: 0; 
             box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат при тапе на смартфонах */
-            outline: none; /* Убирает стандартную рамку фокуса */
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
         
         body { 
@@ -56,8 +56,8 @@
 
         .content-area {
             flex: 1;
-            position: relative; /* Контейнер для наложения экранов */
-            overflow: hidden; /* Общий скролл отключаем */
+            position: relative;
+            overflow: hidden;
         }
 
         .wrap { 
@@ -66,30 +66,25 @@
             margin: 0 auto;
         }
 
-        /* Экраны теперь наложены друг на друга */
         .view { 
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            
-            /* Независимый скролл для каждой вкладки */
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             padding-bottom: 110px; 
-            
-            /* Эффект прозрачности вместо display: none */
             opacity: 0; 
-            visibility: hidden; /* Блокирует клики по скрытым экранам */
-            transition: opacity 0.25s ease, visibility 0.25s ease;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
             z-index: 1;
         }
         
         .view.active { 
             opacity: 1; 
             visibility: visible;
-            z-index: 2; /* Активный экран всегда поверх остальных */
+            z-index: 2;
         }
 
         .btn { 
@@ -104,139 +99,85 @@
         }
         .btn:active { opacity: 0.8; }
         
-        .btn-primary { 
-            background: var(--accent); 
-            color: #14120f; 
-            width: 100%;
-        }
-        
-        .btn-ghost { 
-            background: transparent; 
-            border: 1px solid var(--border); 
-            color: var(--text); 
-            width: 100%;
-        }
-        
+        .btn-primary { background: var(--accent); color: #14120f; width: 100%; }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); width: 100%; }
         .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
 
         .card { 
             background: var(--card); 
             border: 1px solid var(--border); 
-            border-radius: 14px; 
-            padding: 16px; 
+            border-radius: 16px; 
+            padding: 20px; 
             margin-bottom: 16px; 
         }
         
-        .card h3 { 
-            font-size: 16px; 
-            margin-bottom: 14px; 
-            display: flex;
-            align-items: center;
-        }
+        .card h3 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; }
         .card h3 i { color: var(--accent); margin-right: 8px; }
+        .card-title-small { font-size: 16px; font-weight: 500; margin-bottom: 16px; }
 
-        /* ==========================================
-           ТАРИФЫ (Сетка 2 в ряд)
-           ========================================== */
-        .plans-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
-        }
-        
-        .plan { 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            border-radius: 14px; 
-            padding: 14px 12px; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .plan.featured { 
-            border-color: var(--accent); 
-            background: linear-gradient(180deg, var(--accent-soft), var(--card) 60%); 
-        }
-        .plan-top { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-start; 
-            margin-bottom: 8px; 
-        }
+        /* Тарифы */
+        .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .plan { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .plan.featured { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-soft), var(--card) 60%); }
+        .plan-top { display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 8px; }
         .plan-tag { font-size: 10px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
         .plan-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
         .plan-desc { font-size: 11px; color: var(--text3); margin-top: 4px; line-height: 1.3; min-height: 28px; }
         .plan-price-block { margin-top: 8px; }
         .plan-price { font-family: 'Fraunces', serif; font-size: 18px; color: var(--text); }
-        
-        .plan-specs { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 8px; 
-            padding: 10px 0; 
-            margin: auto 0 12px 0; 
-            border-top: 1px solid var(--border); 
-            border-bottom: 1px solid var(--border); 
-        }
+        .plan-specs { display: flex; flex-direction: column; gap: 8px; padding: 10px 0; margin: auto 0 12px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
         .spec { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text2); }
         .spec i { color: var(--accent); font-size: 12px; width: 14px; text-align: center; }
 
-        /* Баланс */
-        .balance-hero {
-            text-align: center;
-            padding: 20px 0;
-            background: var(--card);
-            border-radius: 16px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-        }
-        .balance-label { font-size: 14px; color: var(--text2); margin-bottom: 8px; }
-        .balance-val { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; color: var(--text); }
-        .balance-val small { font-family: 'Inter', sans-serif; font-size: 20px; color: var(--text3); }
-        
         /* Мои подписки */
-        .sub-card { 
-            background: var(--card); 
-            border: 1px solid var(--border); 
-            border-radius: 14px; 
-            padding: 16px; 
-            margin-bottom: 12px; 
-            border-left: 4px solid var(--accent); 
-        }
+        .sub-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--accent); }
         .sub-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .sub-name { font-weight: 600; font-size: 16px; }
-        .sub-meta { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
-        .config-box { 
-            background: var(--bg2); 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            padding: 12px; 
-            font-family: monospace; 
-            font-size: 12px; 
-            color: var(--text2); 
-            word-break: break-all; 
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .config-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: var(--text2); word-break: break-all; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .config-box i { padding: 4px; color: var(--accent); cursor: pointer; }
-        
         .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
         .badge-ok { background: rgba(127,174,122,0.15); color: var(--ok); }
-        
         .sub-actions { display: flex; gap: 8px; }
 
-        /* История */
+        /* ==========================================
+           ЭКРАН БАЛАНСА
+           ========================================== */
+        .balance-label { font-size: 13px; color: var(--text2); }
+        .balance-val-large { font-size: 46px; font-weight: 700; color: var(--text); margin-top: 4px; line-height: 1; }
+        .balance-val-large span { font-size: 22px; color: var(--text3); margin-left: 4px; font-weight: 500; }
+
+        .promo-input-group { display: flex; gap: 12px; }
+        .form-input { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; width: 100%;}
+        .form-input:focus { border-color: var(--blue-btn); }
+        .btn-blue { background-color: var(--blue-btn); color: #ffffff; border: none; border-radius: 10px; padding: 0 16px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+        .btn-blue:active { opacity: 0.8; }
+
+        .payment-method { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: background 0.2s; }
+        .payment-method:active { background: rgba(255, 255, 255, 0.05); }
+        .payment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        
+        .payment-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #8B5CF6, #3B82F6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        
+        .payment-title { font-size: 15px; font-weight: 600; }
+        .payment-desc { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
+        .payment-limits { font-size: 12px; color: var(--text3); }
+
+        .list-menu { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;}
+        .list-item { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .list-item-title { font-size: 15px; font-weight: 500; }
+        .list-item-icon { color: var(--text2); font-size: 14px; transition: transform 0.3s ease; }
+        
+        /* История транзакций */
+        #historyContainer { display: none; padding: 0 20px 20px 20px; border-top: 1px solid var(--border); }
         .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-        .tx-row:last-child { border-bottom: none; }
+        .tx-row:last-child { border-bottom: none; padding-bottom: 0; }
         .tx-desc { color: var(--text); }
         .tx-date { color: var(--text3); font-size: 12px; display: block; margin-top: 4px;}
         .tx-amount.plus { color: var(--ok); font-weight: 600; }
         .tx-amount.minus { color: var(--text); font-weight: 600; }
 
         /* ==========================================
-           ПЛАВАЮЩЕЕ МЕНЮ НАВИГАЦИИ (С ползунком)
+           ПЛАВАЮЩЕЕ МЕНЮ НАВИГАЦИИ
            ========================================== */
         .bottom-nav {
             display: flex;
@@ -253,27 +194,23 @@
             right: 16px;
             padding: 6px;
             z-index: 100;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            /* Важно для позиционирования ползунка */
-            position: fixed; 
-            touch-action: none; /* Запрещает системный скролл страницы при жестах на панели */
-            transform: translateZ(0); /* Заставляет браузер вынести панель в отдельный слой GPU */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+            touch-action: none;
+            transform: translateZ(0); 
         }
 
-        /* Тот самый подвижный ползунок */
         .nav-indicator {
             position: absolute;
             top: 6px;
             bottom: 6px;
             left: 0;
-            background: rgba(217, 123, 63, 0.1); /* Полупрозрачный оранжевый фон */
+            background: rgba(217, 123, 63, 0.1); 
             border: 1px solid var(--accent);
             border-radius: 18px;
             z-index: 0;
-            /* Плавная анимация движения и изменения ширины */
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none; /* Пропускает клики сквозь себя на кнопки */
-            will-change: transform, width; /* Заранее готовит видеокарту к анимации ползунка */
+            pointer-events: none; 
+            will-change: transform, width; 
         }
         
         .nav-item {
@@ -288,41 +225,16 @@
             transition: color 0.3s ease;
             padding: 10px 0;
             position: relative;
-            z-index: 1; /* Кнопки находятся поверх ползунка */
-            
-            /* Защита от выделения текста при свайпе */
+            z-index: 1;
             user-select: none;
             -webkit-user-select: none;
         }
         
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 500; }
+        .nav-item.active { color: var(--accent); }
         
-        /* Теперь активная кнопка просто меняет цвет текста (а фон дает ползунок под ней) */
-        .nav-item.active { 
-            color: var(--accent); 
-        }
-        
-        .page-header {
-            padding: 16px 0 8px 0;
-            font-size: 22px;
-            margin-bottom: 16px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text3);
-        }
-        .empty-state i {
-            font-size: 40px;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        .empty-state p {
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
+        .page-header { padding: 16px 0 8px 0; font-size: 22px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -351,19 +263,48 @@
             <div class="wrap">
                 <h1 class="page-header serif">Баланс</h1>
                 
-                <div class="balance-hero">
+                <!-- Текущий баланс -->
+                <div class="card" style="padding: 24px 20px;">
                     <div class="balance-label">Текущий баланс</div>
-                    <div class="balance-val" id="balanceDisplay">0<small> ₽</small></div>
+                    <div class="balance-val-large" id="balanceDisplay">0.00<span>₽</span></div>
                 </div>
 
-                <button class="btn btn-primary" style="margin-bottom: 24px;" onclick="Telegram.WebApp.showAlert('Здесь будет вызов платежки (ЮKassa / Telegram Stars)')">
-                    <i class="fas fa-plus-circle"></i> Пополнить баланс
-                </button>
-
+                <!-- Промокод -->
                 <div class="card">
-                    <h3><i class="fas fa-history"></i> История операций</h3>
-                    <div id="txHistory"></div>
+                    <div class="card-title-small">Промокод</div>
+                    <div class="promo-input-group">
+                        <input type="text" class="form-input" placeholder="Введите промокод" id="promoCodeInput">
+                        <button class="btn-blue" onclick="Telegram.WebApp.showAlert('Промокод активирован')">Активировать</button>
+                    </div>
                 </div>
+
+                <!-- Пополнение баланса -->
+                <div class="card">
+                    <div class="card-title-small">Пополнение баланса</div>
+                    
+                    <div class="payment-method" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa для оплаты')">
+                        <div class="payment-header">
+                            <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
+                            <div class="payment-title">ЮKassa</div>
+                        </div>
+                        <div class="payment-desc">Оплата банковской картой, СБП или ЮMoney через ЮKassa</div>
+                        <div class="payment-limits">1 до 100000 ₽</div>
+                    </div>
+                </div>
+
+                <!-- История операций (выпадающий список) -->
+                <div class="list-menu">
+                    <div class="list-item" id="historyToggleBtn" onclick="toggleHistory()">
+                        <span class="list-item-title">История операций</span>
+                        <i class="fas fa-chevron-down list-item-icon" id="historyIcon"></i>
+                    </div>
+                    <div id="historyContainer">
+                        <div id="txHistory">
+                            <!-- Заполняется из JS -->
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -400,9 +341,7 @@
 
     <!-- Навигация -->
     <div class="bottom-nav" id="bottomNav">
-        <!-- Подвижный ползунок выделения -->
         <div class="nav-indicator" id="navIndicator"></div>
-
         <a class="nav-item active" onclick="switchTab('view-home', this)">
             <i class="fas fa-house"></i>
             <span>Главная</span>
@@ -425,16 +364,12 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    
-    // Принудительно задаем оригинальные цвета, чтобы отключить синюю тему ТГ
     tg.setHeaderColor('#1c1915'); 
     tg.setBackgroundColor('#14120f');
-
     tg.ready();
 
     let userBalance = 1240;
     
-    // 4 Тарифа
     const plans = [
         {id: 1, name: '1 месяц', desc: 'Базовый тариф', price: 200, duration: '30 дней', featured: false},
         {id: 2, name: '3 месяца', desc: 'Популярный', price: 520, duration: '90 дней', featured: true},
@@ -460,28 +395,35 @@
 
 
     function switchTab(viewId, navElement) {
-        // Защита от миганий: если вкладка уже открыта, ничего не делаем
-        if (navElement.classList.contains('active')) {
-            return;
-        }
+        if (navElement.classList.contains('active')) return;
 
-        // 1. Снимаем выделение со старых вкладок
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
-        // 2. Активируем новые
         document.getElementById(viewId).classList.add('active');
         navElement.classList.add('active');
         
-        // 3. Двигаем ползунок
         const indicator = document.getElementById('navIndicator');
         if (indicator) {
             indicator.style.transform = `translateX(${navElement.offsetLeft}px)`;
             indicator.style.width = `${navElement.offsetWidth}px`;
         }
         
-        // Вибрация
         tg.HapticFeedback.selectionChanged();
+    }
+
+    // Раскрытие истории операций
+    function toggleHistory() {
+        const container = document.getElementById('historyContainer');
+        const icon = document.getElementById('historyIcon');
+        
+        if (container.style.display === 'block') {
+            container.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+        } else {
+            container.style.display = 'block';
+            icon.style.transform = 'rotate(180deg)';
+        }
     }
 
     function renderUserData() {
@@ -496,41 +438,29 @@
     }
 
     function renderBalance() {
-        document.getElementById('balanceDisplay').innerHTML = `${userBalance}<small> ₽</small>`;
+        // Форматируем баланс: добавляем .00 в конце
+        document.getElementById('balanceDisplay').innerHTML = `${userBalance}.00<span>₽</span>`;
     }
 
     function renderSubscriptions() {
         const container = document.getElementById('mySubsList');
-        
-        if (mySubscriptions.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <p>У вас пока нет активных подключений.</p>
-                    <button class="btn btn-primary btn-sm" onclick="document.querySelectorAll('.nav-item')[1].click()">Выбрать тариф</button>
-                </div>
-            `;
-            return;
-        }
+        if (mySubscriptions.length === 0) return;
 
         container.innerHTML = mySubscriptions.map(s => {
             const daysLeft = s.durationDays - Math.floor((Date.now() - s.purchasedAt) / 86400000);
-            
             return `
                 <div class="sub-card">
                     <div class="sub-head">
                         <span class="sub-name">${s.name}</span>
                         <span class="badge badge-ok">Осталось ${daysLeft} дн.</span>
                     </div>
-                    
                     <div class="config-box" onclick="copyText('${s.link}', 'Ссылка скопирована!')">
                         <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 85%;">${s.link}</span>
                         <i class="fas fa-copy"></i>
                     </div>
-                    
                     <div class="sub-actions">
-                        <button class="btn btn-primary btn-sm" onclick="Telegram.WebApp.showAlert('Продление тарифа (вызов API)')" style="flex: 1;">Продлить</button>
-                        <button class="btn btn-ghost btn-sm" onclick="Telegram.WebApp.showPopup({title: 'QR код', message: 'Здесь генерируется QR код для конфигурации', buttons: [{type: 'close'}]})"><i class="fas fa-qrcode"></i></button>
+                        <button class="btn btn-primary btn-sm" onclick="Telegram.WebApp.showAlert('Продление тарифа')" style="flex: 1;">Продлить</button>
+                        <button class="btn btn-ghost btn-sm" onclick="Telegram.WebApp.showPopup({title: 'QR код', message: 'Здесь генерируется QR код', buttons: [{type: 'close'}]})"><i class="fas fa-qrcode"></i></button>
                     </div>
                 </div>
             `;
@@ -539,7 +469,6 @@
 
     function renderPlans() {
         const container = document.getElementById('plansContainer');
-        
         container.innerHTML = plans.map(p => `
             <div class="plan ${p.featured ? 'featured' : ''}">
                 <div class="plan-top">
@@ -552,12 +481,10 @@
                         <div class="plan-price">${p.price} ₽</div>
                     </div>
                 </div>
-                
                 <div class="plan-specs">
                     <div class="spec"><i class="fas fa-calendar"></i>${p.duration}</div>
                     <div class="spec"><i class="fas fa-infinity"></i>Тариф: ∞</div>
                 </div>
-                
                 <button class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'}" onclick="buyPlan(${p.id}, '${p.name}', ${p.price})">Купить</button>
             </div>
         `).join('');
@@ -565,12 +492,10 @@
 
     function renderTransactions() {
         const container = document.getElementById('txHistory');
-        
         if (transactions.length === 0) {
             container.innerHTML = `<div style="text-align: center; color: var(--text3); font-size: 13px; padding: 20px 0;">Нет операций</div>`;
             return;
         }
-
         container.innerHTML = transactions.map(t => {
             const isPlus = t.amount > 0;
             const dateStr = new Date(t.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'});
@@ -593,7 +518,6 @@
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-        
         tg.HapticFeedback.notificationOccurred('success');
         tg.showAlert(successMessage);
     }
@@ -603,18 +527,12 @@
             tg.showPopup({
                 title: 'Недостаточно средств',
                 message: `Для покупки тарифа «${name}» нужно пополнить баланс на ${price - userBalance} ₽.`,
-                buttons: [
-                    {id: 'deposit', type: 'default', text: 'Пополнить'},
-                    {type: 'cancel'}
-                ]
+                buttons: [{id: 'deposit', type: 'default', text: 'Пополнить'}, {type: 'cancel'}]
             }, function(btnId) {
-                if (btnId === 'deposit') {
-                    document.querySelectorAll('.nav-item')[2].click(); 
-                }
+                if (btnId === 'deposit') document.querySelectorAll('.nav-item')[2].click(); 
             });
             return;
         }
-
         tg.showConfirm(`Подтверждаете покупку тарифа «${name}» за ${price} ₽?`, function(confirmed) {
             if (confirmed) {
                 tg.HapticFeedback.notificationOccurred('success');
@@ -623,48 +541,29 @@
         });
     }
 
-    // ==========================================
-    // ЛОГИКА НЕПРЕРЫВНОГО СКОЛЬЖЕНИЯ (DRAG)
-    // ==========================================
+    // Логика непрерывного скольжения (Drag)
     const navBar = document.getElementById('bottomNav');
     let isDragging = false;
 
     function handleDrag(clientX, clientY) {
-        // Находим элемент, над которым сейчас находится палец
         const elem = document.elementFromPoint(clientX, clientY);
         if (!elem) return;
-        
-        // Проверяем, является ли элемент (или его родитель) кнопкой меню
         const navItem = elem.closest('.nav-item');
-        
-        // Если палец зашел на новую кнопку, мгновенно переключаем вкладку
         if (navItem && !navItem.classList.contains('active')) {
-            navItem.click(); // Вызывает функцию switchTab и вибрацию
+            navItem.click();
         }
     }
 
-    // Обработчики для смартфонов (Touch)
     navBar.addEventListener('touchmove', (e) => {
-        // Блокируем стандартные жесты браузера, чтобы меню не дергалось
         e.preventDefault(); 
         const touch = e.touches[0];
         handleDrag(touch.clientX, touch.clientY);
-    }, { passive: false }); // passive: false обязательно для работы preventDefault()
+    }, { passive: false });
 
-    // Обработчики для ПК (Мышь) - для удобства тестирования
-    navBar.addEventListener('mousedown', (e) => { 
-        isDragging = true; 
-        handleDrag(e.clientX, e.clientY);
-    });
-    window.addEventListener('mousemove', (e) => { 
-        if (isDragging) handleDrag(e.clientX, e.clientY);
-    });
+    navBar.addEventListener('mousedown', (e) => { isDragging = true; handleDrag(e.clientX, e.clientY); });
+    window.addEventListener('mousemove', (e) => { if (isDragging) handleDrag(e.clientX, e.clientY); });
     window.addEventListener('mouseup', () => { isDragging = false; });
 
-
-    // ==========================================
-    // ИНИЦИАЛИЗАЦИЯ
-    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const activeNav = document.querySelector('.nav-item.active');
         if(activeNav) {
@@ -674,7 +573,6 @@
         }
     });
 
-    // Поправляем ползунок при повороте экрана
     window.addEventListener('resize', () => {
         const activeNav = document.querySelector('.nav-item.active');
         if(activeNav) {
@@ -690,12 +588,14 @@
     renderPlans();
     renderTransactions();
 
-    // Задержка для точного позиционирования ползунка при старте на iOS
     setTimeout(() => {
         const activeNav = document.querySelector('.nav-item.active');
-        if(activeNav) activeNav.click();
+        if(activeNav) {
+            const indicator = document.getElementById('navIndicator');
+            indicator.style.transform = `translateX(${activeNav.offsetLeft}px)`;
+            indicator.style.width = `${activeNav.offsetWidth}px`;
+        }
     }, 100);
-
 </script>
 </body>
 </html>
