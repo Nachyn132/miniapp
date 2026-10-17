@@ -257,6 +257,7 @@
             /* Важно для позиционирования ползунка */
             position: fixed; 
             touch-action: none; /* Запрещает системный скролл страницы при жестах на панели */
+            transform: translateZ(0); /* Заставляет браузер вынести панель в отдельный слой GPU */
         }
 
         /* Тот самый подвижный ползунок */
@@ -272,6 +273,7 @@
             /* Плавная анимация движения и изменения ширины */
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: none; /* Пропускает клики сквозь себя на кнопки */
+            will-change: transform, width; /* Заранее готовит видеокарту к анимации ползунка */
         }
         
         .nav-item {
@@ -458,20 +460,27 @@
 
 
     function switchTab(viewId, navElement) {
+        // Защита от миганий: если вкладка уже открыта, ничего не делаем
+        if (navElement.classList.contains('active')) {
+            return;
+        }
+
+        // 1. Снимаем выделение со старых вкладок
         document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
+        // 2. Активируем новые
         document.getElementById(viewId).classList.add('active');
         navElement.classList.add('active');
         
-        // --- Логика движения ползунка ---
+        // 3. Двигаем ползунок
         const indicator = document.getElementById('navIndicator');
         if (indicator) {
-            // Двигаем ползунок на позицию нажатой кнопки и берем ее ширину
             indicator.style.transform = `translateX(${navElement.offsetLeft}px)`;
             indicator.style.width = `${navElement.offsetWidth}px`;
         }
         
+        // Вибрация
         tg.HapticFeedback.selectionChanged();
     }
 
