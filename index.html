@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Личный кабинет VPN</title>
-    <!-- Подключение библиотеки Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1E1E1E;
+            --bg-color: #0F1218;
+            --card-bg: #161A23;
             --border-color: #262B34;
-            --accent: #F59E0B;
+            --accent: #FF9F43;
             --text-main: #FFFFFF;
-            --text-muted: #9CA3AF;
+            --text-muted: #848B98;
+            --blue-accent: #3B82F6;
             --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -23,7 +23,7 @@
             font-family: var(--font-family);
             margin: 0;
             padding: 0;
-            padding-bottom: 80px; /* Отступ для нижнего меню */
+            padding-bottom: 90px;
         }
 
         .header {
@@ -32,69 +32,79 @@
             align-items: center;
             padding: 16px;
             border-bottom: 1px solid var(--border-color);
+            background-color: #12141D;
         }
 
-        .header-title {
-            font-size: 18px;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
             font-weight: 600;
         }
 
-        .container {
-            padding: 20px 16px;
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            background-color: #0EA5E9;
+            border-radius: 50%;
         }
 
-        .greeting {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .sub-greeting {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 16px;
+            color: var(--text-muted);
         }
 
-        .badge {
-            background-color: #1E3A8A;
-            color: #BFDBFE;
-            padding: 2px 8px;
+        .lang-selector {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 24px 16px;
         }
 
         /* Карточка тарифа */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 24px;
+            border-radius: 20px;
+            padding: 32px 24px 24px;
             text-align: center;
             margin-bottom: 16px;
+            position: relative;
         }
 
         .card-icon {
             width: 48px;
             height: 48px;
-            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(255, 159, 67, 0.2);
             color: var(--accent);
-            border-radius: 12px;
+            border-radius: 14px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             margin-bottom: 16px;
-            border: 1px solid rgba(245, 158, 11, 0.2);
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1A1A1A;
         }
 
         .card-title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 600;
             margin-bottom: 8px;
+            margin-top: 8px;
         }
 
         .card-subtitle {
@@ -104,21 +114,21 @@
         }
 
         .price-badge {
-            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(255, 159, 67, 0.3);
             color: var(--accent);
-            border: 1px solid var(--accent);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: 700;
+            padding: 8px 24px;
+            border-radius: 12px;
+            font-size: 20px;
+            font-weight: 600;
             display: inline-block;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
         }
 
         .stats {
             display: flex;
             justify-content: center;
             gap: 32px;
+            margin-bottom: 24px;
         }
 
         .stat-item h3 {
@@ -130,15 +140,16 @@
         .stat-item p {
             margin: 4px 0 0 0;
             color: var(--text-muted);
-            font-size: 12px;
+            font-size: 13px;
         }
 
-        /* Карточка баланса */
-        .balance-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
+        /* Блок внутри тарифа для баланса */
+        .inner-balance {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 16px;
             padding: 16px;
+            text-align: left;
             margin-bottom: 16px;
         }
 
@@ -146,7 +157,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .balance-label {
@@ -155,45 +166,98 @@
         }
 
         .balance-value {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--accent);
         }
 
         .balance-hint {
             color: var(--accent);
-            font-size: 12px;
-            margin-bottom: 16px;
+            font-size: 13px;
         }
 
-        .btn {
+        .btn-orange {
             background-color: var(--accent);
             color: #000;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 16px;
             width: 100%;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.2s;
         }
 
-        .btn:active {
-            opacity: 0.8;
+        /* Кнопка "Посмотреть тарифы" */
+        .dashed-btn {
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+            cursor: pointer;
         }
 
-        /* Нижнее меню навигации */
+        /* Карточки Баланс и Рефералы */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .grid-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .grid-card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .grid-card-arrow {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 12px;
+        }
+
+        .grid-card-value {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .grid-card-value.blue {
+            color: var(--blue-accent);
+        }
+
+        .grid-card-sub {
+            color: var(--blue-accent);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        /* Нижняя навигация */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--card-bg);
+            background-color: #12141D;
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: space-around;
-            padding: 12px 0;
+            padding: 12px 8px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom));
         }
 
@@ -202,35 +266,41 @@
             flex-direction: column;
             align-items: center;
             color: var(--text-muted);
-            font-size: 10px;
-            text-decoration: none;
-            gap: 4px;
+            font-size: 11px;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 14px;
         }
 
         .nav-item.active {
-            color: #3B82F6; /* Синий цвет активного пункта */
+            background-color: rgba(29, 58, 138, 0.3);
+            color: var(--blue-accent);
         }
         
         .nav-icon {
             font-size: 20px;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="header-title">HerbisLink VPN</div>
+        <div class="header-left">
+            <div class="header-icon"></div>
+            Ghost VPN
+        </div>
+        <div class="header-right">
+            <span>🔔</span>
+            <div class="lang-selector">🇷🇺 RU ⌄</div>
+            <span>≡</span>
+        </div>
     </div>
 
     <div class="container">
-        <!-- Блок приветствия (имя заполнится через JS) -->
-        <div class="greeting">Добро пожаловать, <span id="userName">Гость</span>!</div>
-        <div class="sub-greeting">
-            Ваша подписка <span class="badge">★ Base</span>
-        </div>
-
-        <!-- Основная карточка тарифа -->
-        <div class="card">
+        
+        <!-- Карточка подписки -->
+        <div class="card" style="margin-top: 24px;">
             <div class="card-icon">⚡</div>
             <div class="card-title">Пробная подписка</div>
             <div class="card-subtitle">Начните с пробной подписки</div>
@@ -251,23 +321,48 @@
                     <p>устройств</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Карточка баланса -->
-        <div class="balance-card">
-            <div class="balance-row">
-                <span class="balance-label">Текущий баланс</span>
-                <span class="balance-value">0.00 ₽</span>
+            <div class="inner-balance">
+                <div class="balance-row">
+                    <span class="balance-label">Текущий баланс</span>
+                    <span class="balance-value">0.00 ₽</span>
+                </div>
+                <div class="balance-hint">Пополните баланс для активации</div>
             </div>
-            <div class="balance-hint">Пополните баланс для активации</div>
-            
-            <button class="btn" onclick="Telegram.WebApp.showAlert('Здесь будет открываться оплата ЮKassa')">
+
+            <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие оплаты')">
                 Пополнить баланс
             </button>
         </div>
+
+        <!-- Кнопка Тарифы -->
+        <div class="dashed-btn">
+            Посмотреть тарифы и купить подписку
+        </div>
+
+        <!-- Нижние карточки -->
+        <div class="grid-cards">
+            <div class="grid-card">
+                <div class="grid-card-header">
+                    <span>💳</span> Баланс
+                </div>
+                <div class="grid-card-arrow">ᐳ</div>
+                <div class="grid-card-value blue">0.00 ₽</div>
+            </div>
+            
+            <div class="grid-card">
+                <div class="grid-card-header">
+                    <span>👥</span> Рефералы
+                </div>
+                <div class="grid-card-arrow">ᐳ</div>
+                <div class="grid-card-value">0</div>
+                <div class="grid-card-sub">+0.00 ₽</div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Нижняя навигация -->
+    <!-- Навигация -->
     <div class="bottom-nav">
         <div class="nav-item active">
             <span class="nav-icon">🏠</span>
@@ -292,15 +387,8 @@
     </div>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем на весь экран
-
-        // Получаем данные пользователя, если сайт открыт внутри Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            // Подставляем имя из Telegram вместо "Гостя"
-            document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
-        }
+        tg.expand();
     </script>
 </body>
 </html>
