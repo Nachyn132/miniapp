@@ -219,6 +219,73 @@
             line-height: 1.5;
         }
 
+        /* ==========================================
+           ЭКРАН ПОДДЕРЖКИ
+           ========================================== */
+        .support-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 120px); /* Центрирование по вертикали с учетом меню */
+            padding: 16px;
+        }
+        
+        .support-card {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            padding: 40px 24px;
+        }
+        
+        .support-icon-wrap {
+            width: 64px;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: var(--text2);
+            margin: 0 auto 20px auto;
+        }
+        
+        .support-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        
+        .support-desc {
+            color: var(--text2);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+        
+        .support-btn-large {
+            width: 100%;
+            height: 48px;
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+        
+        .support-email {
+            color: var(--text3);
+            font-size: 13px;
+        }
+        
+        .support-email a {
+            color: var(--blue-text);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        
+        .support-email a:active {
+            opacity: 0.7;
+        }
+
         /* Навигация */
         .bottom-nav {
             display: flex; justify-content: space-between; align-items: center;
@@ -398,31 +465,22 @@
             </div>
         </div>
 
-        <!-- ЭКРАН 5: ПРОФИЛЬ -->
-        <div class="view" id="view-profile">
-            <div class="wrap">
-                <h1 class="page-header serif">Профиль</h1>
-                
-                <div class="card">
-                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                        <div style="width: 50px; height: 50px; border-radius: 25px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--blue-text); font-size: 24px;">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 16px;" id="tgName">Пользователь</div>
-                            <div style="color: var(--text3); font-size: 13px;" id="tgId">ID: Неизвестно</div>
-                        </div>
+        <!-- ЭКРАН 5: ПОДДЕРЖКА -->
+        <div class="view" id="view-support">
+            <div class="support-wrap">
+                <div class="card support-card">
+                    <div class="support-icon-wrap">
+                        <i class="far fa-comment"></i>
                     </div>
-                </div>
-
-                <div class="card" onclick="document.querySelectorAll('.nav-item')[3].click()" style="cursor: pointer;">
-                    <h3><i class="fas fa-gift" style="color: var(--ok)"></i> Пригласить друга</h3>
-                    <p style="font-size: 13px; color: var(--text2);">Получите бонусные рубли за приглашенных друзей</p>
-                </div>
-
-                <div class="card" onclick="Telegram.WebApp.openTelegramLink('https://t.me/Nachyn132')" style="cursor: pointer;">
-                    <h3><i class="fas fa-headset" style="color: var(--blue-text)"></i> Поддержка</h3>
-                    <p style="font-size: 13px; color: var(--text2);">Написать оператору в Telegram</p>
+                    
+                    <h2 class="support-title">Поддержка</h2>
+                    <p class="support-desc">Для получения поддержки обратитесь к<br>@Nachyn132</p>
+                    
+                    <button class="btn-blue support-btn-large" onclick="Telegram.WebApp.openTelegramLink('https://t.me/Nachyn132')">
+                        Связаться с поддержкой
+                    </button>
+                    
+                    <p class="support-email">Или напишите на почту <a href="mailto:support@herbisvpn.com">support@herbisvpn.com</a></p>
                 </div>
             </div>
         </div>
@@ -448,9 +506,9 @@
             <i class="fas fa-user-group"></i>
             <span>Рефералы</span>
         </a>
-        <a class="nav-item" onclick="switchTab('view-profile', this)">
-            <i class="fas fa-user"></i>
-            <span>Профиль</span>
+        <a class="nav-item" onclick="switchTab('view-support', this)">
+            <i class="far fa-comment"></i>
+            <span>Поддержка</span>
         </a>
     </div>
 </div>
