@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Личный кабинет VPN</title>
+    <title>Личный кабинет VPN - Подписки</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -75,30 +75,12 @@
             padding: 24px 16px;
         }
 
-        /* Блок приветствия */
-        .greeting {
-            font-size: 26px;
+        /* Заголовок страницы */
+        .page-title {
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .sub-greeting {
-            color: var(--text-muted);
-            font-size: 15px;
-            margin-bottom: 40px; /* Отступ до карточки, чтобы вместилась иконка-молния */
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .badge {
-            background-color: rgba(29, 58, 138, 0.4);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #93C5FD;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 24px;
         }
 
         /* Основная карточка тарифа */
@@ -124,7 +106,7 @@
             font-size: 20px;
             margin-bottom: 16px;
             position: absolute;
-            top: -24px; /* Сдвиг иконки вверх на границу карточки */
+            top: -24px;
             left: 50%;
             transform: translateX(-50%);
             background-color: #1A1A1A;
@@ -230,53 +212,6 @@
             cursor: pointer;
         }
 
-        /* Нижние карточки Баланс и Рефералы */
-        .grid-cards {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .grid-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 16px;
-            position: relative;
-        }
-
-        .grid-card-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-
-        .grid-card-arrow {
-            position: absolute;
-            right: 16px;
-            top: 16px;
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 12px;
-        }
-
-        .grid-card-value {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .grid-card-value.blue {
-            color: var(--blue-accent);
-        }
-
-        .grid-card-sub {
-            color: var(--blue-accent);
-            font-size: 13px;
-            margin-top: 4px;
-        }
-
         /* Нижняя навигация */
         .bottom-nav {
             position: fixed;
@@ -301,6 +236,7 @@
             gap: 6px;
             padding: 8px 16px;
             border-radius: 14px;
+            cursor: pointer;
         }
 
         .nav-item.active {
@@ -331,14 +267,11 @@
 
     <div class="container">
         
-        <!-- Приветствие -->
-        <div class="greeting">Добро пожаловать, <span id="userName">Nachyn</span>!</div>
-        <div class="sub-greeting">
-            Ваша подписка <span class="badge">★ Base</span>
-        </div>
+        <!-- Заголовок раздела -->
+        <h1 class="page-title">Мои подписки</h1>
         
         <!-- Карточка подписки -->
-        <div class="card">
+        <div class="card" style="margin-top: 24px;">
             <div class="card-icon">⚡</div>
             <div class="card-title">Пробная подписка</div>
             <div class="card-subtitle">Начните с пробной подписки</div>
@@ -378,35 +311,17 @@
             Посмотреть тарифы и купить подписку
         </div>
 
-        <!-- Карточки Баланс и Рефералы -->
-        <div class="grid-cards">
-            <div class="grid-card">
-                <div class="grid-card-header">
-                    <span>💳</span> Баланс
-                </div>
-                <div class="grid-card-arrow">ᐳ</div>
-                <div class="grid-card-value blue">0.00 ₽</div>
-            </div>
-            
-            <div class="grid-card">
-                <div class="grid-card-header">
-                    <span>👥</span> Рефералы
-                </div>
-                <div class="grid-card-arrow">ᐳ</div>
-                <div class="grid-card-value">0</div>
-                <div class="grid-card-sub">+0.00 ₽</div>
-            </div>
-        </div>
-
     </div>
 
     <!-- Навигация -->
     <div class="bottom-nav">
-        <div class="nav-item active">
+        <!-- Главная теперь не активна -->
+        <div class="nav-item">
             <span class="nav-icon">🏠</span>
             <span>Главная</span>
         </div>
-        <div class="nav-item">
+        <!-- Подписка стала активной -->
+        <div class="nav-item active">
             <span class="nav-icon">✨</span>
             <span>Подписка</span>
         </div>
@@ -427,11 +342,6 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-
-        // Подставляем имя из Telegram, если оно доступно
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
-        }
     </script>
 </body>
 </html>
