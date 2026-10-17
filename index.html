@@ -433,7 +433,8 @@
                 
                 <div class="checkout-summary">
                     <div class="summary-row">
-                        <span>Период: <span id="checkoutSummaryPeriod">1 месяц</span></span>
+                        <span id="checkoutSummaryDevicesLabel">1 устройство</span>
+                        <span id="checkoutSummaryDevicesPrice">0.00 ₽</span>
                     </div>
                     <div class="summary-row total">
                         <span>К оплате</span>
@@ -499,7 +500,6 @@
         
         document.getElementById('checkoutPlanName').textContent = currentPlan.name;
         document.getElementById('checkoutPlanPeriod').textContent = currentPlan.duration;
-        document.getElementById('checkoutSummaryPeriod').textContent = currentPlan.name;
         
         renderDeviceGrid();
         
@@ -518,7 +518,6 @@
         const deviceOptions = [1, 2, 4, 6, 8, 10];
         
         deviceOptions.forEach(dev => {
-            // Расчет цены для этого количества устройств
             const totalPrice = currentPlan.price * deviceMultipliers[dev];
             const pricePerMonth = totalPrice / currentPlan.months;
             
@@ -526,7 +525,7 @@
             card.className = `device-card ${dev === selectedDevices ? 'active' : ''}`;
             card.onclick = () => {
                 selectedDevices = dev;
-                renderDeviceGrid(); // Перерисовываем для обновления активного класса
+                renderDeviceGrid(); 
                 tg.HapticFeedback.selectionChanged();
             };
             
@@ -538,8 +537,17 @@
             grid.appendChild(card);
         });
         
-        // Обновляем итоговую сумму
+        // Расчет итоговой суммы
         const finalPrice = currentPlan.price * deviceMultipliers[selectedDevices];
+        
+        // Правильное склонение слова "устройство"
+        let deviceWord = 'устройств';
+        if (selectedDevices === 1) deviceWord = 'устройство';
+        else if (selectedDevices > 1 && selectedDevices < 5) deviceWord = 'устройства';
+        
+        // Обновляем текст и цены в интерфейсе
+        document.getElementById('checkoutSummaryDevicesLabel').textContent = `${selectedDevices} ${deviceWord}`;
+        document.getElementById('checkoutSummaryDevicesPrice').textContent = `${finalPrice.toFixed(2)} ₽`;
         document.getElementById('checkoutSummaryTotal').textContent = `${finalPrice.toFixed(2)} ₽`;
     }
 
