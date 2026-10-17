@@ -28,7 +28,13 @@
             --nav-height: 60px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; /* Убирает синий квадрат при тапе на смартфонах */
+            outline: none; /* Убирает стандартную рамку фокуса */
+        }
         
         body { 
             background-color: #14120f !important; 
@@ -263,6 +269,8 @@
             padding: 10px 0;
             border-radius: 18px; 
             border: 1px solid transparent; 
+            user-select: none;
+            -webkit-user-select: none;
         }
         
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
