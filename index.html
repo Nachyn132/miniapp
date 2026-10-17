@@ -62,9 +62,9 @@
         }
 
         .view { display: none; }
-        .view.active { display: block; animation: fade 0.25s ease; }
-        @keyframes fade { 
-            from { opacity: 0; transform: translateY(6px); } 
+        .view.active { display: block; animation: quickFade 0.15s ease-out; }
+        @keyframes quickFade { 
+            from { opacity: 0.6; transform: translateY(3px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
 
