@@ -12,23 +12,15 @@
     <style>
         /* Базовые переменные и стили, адаптированные под Telegram */
         :root {
-            /* Используем цвета темы Telegram по умолчанию, с фолбеками */
-            --tg-theme-bg-color: #14120f;
-            --tg-theme-secondary-bg-color: #1c1915;
-            --tg-theme-text-color: #f2ede4;
-            --tg-theme-hint-color: #a89e8f;
-            --tg-theme-link-color: #d97b3f;
-            --tg-theme-button-color: #d97b3f;
-            --tg-theme-button-text-color: #14120f;
-
-            --bg: var(--tg-theme-bg-color, #14120f);
-            --bg2: var(--tg-theme-secondary-bg-color, #1c1915);
-            --card: #201d18; /* Немного светлее bg для карточек */
+            /* Ваши жестко заданные фирменные цвета */
+            --bg: #14120f;
+            --bg2: #1c1915;
+            --card: #201d18;
             --border: #322d25;
-            --accent: var(--tg-theme-button-color, #d97b3f);
+            --accent: #d97b3f;
             --accent-soft: rgba(217,123,63,0.12);
-            --text: var(--tg-theme-text-color, #f2ede4);
-            --text2: var(--tg-theme-hint-color, #a89e8f);
+            --text: #f2ede4;
+            --text2: #a89e8f;
             --text3: #6f6858;
             --ok: #7fae7a;
             --warn: #d9a63f;
@@ -99,7 +91,7 @@
         
         .btn-primary { 
             background: var(--accent); 
-            color: var(--tg-theme-button-text-color, #14120f); 
+            color: #14120f; /* Темный текст на оранжевой кнопке */
             width: 100%;
         }
         
