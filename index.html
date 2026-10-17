@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>HerbisVPN - Мини-приложение Telegram</title>
-    <!-- Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg: #14120f;
-            --bg2: #1c1915;
-            --card: #201d18;
-            --border: #322d25;
+            --bg: #0a0f1a;
+            --bg2: #131a2a;
+            --card: #111726;
+            --border: #1e293b;
             --accent: #d97b3f;
             --accent-soft: rgba(217,123,63,0.12);
-            --text: #f2ede4;
-            --text2: #a89e8f;
-            --text3: #6f6858;
-            --ok: #7fae7a;
-            --warn: #d9a63f;
-            --err: #c2665b;
-            --blue-btn: #1D4ED8;
+            --text: #f8fafc;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --ok: #10B981;
+            --warn: #F59E0B;
+            --err: #EF4444;
+            --blue-btn: #2563EB;
+            --blue-text: #3B82F6;
             
             --nav-height: 60px;
         }
@@ -37,8 +37,8 @@
         }
         
         body { 
-            background-color: #14120f !important; 
-            color: #f2ede4 !important; 
+            background-color: var(--bg) !important; 
+            color: var(--text) !important; 
             font-family: 'Inter', sans-serif; 
             overflow: hidden;
             width: 100vw;
@@ -98,7 +98,6 @@
             text-align: center;
         }
         .btn:active { opacity: 0.8; }
-        
         .btn-primary { background: var(--accent); color: #14120f; width: 100%; }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); width: 100%; }
         .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
@@ -114,6 +113,7 @@
         .card h3 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; }
         .card h3 i { color: var(--accent); margin-right: 8px; }
         .card-title-small { font-size: 16px; font-weight: 500; margin-bottom: 16px; }
+        .page-header { padding: 16px 0 8px 0; font-size: 24px; margin-bottom: 16px; }
 
         /* Тарифы */
         .plans-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -136,38 +136,33 @@
         .config-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: monospace; font-size: 12px; color: var(--text2); word-break: break-all; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .config-box i { padding: 4px; color: var(--accent); cursor: pointer; }
         .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
-        .badge-ok { background: rgba(127,174,122,0.15); color: var(--ok); }
+        .badge-ok { background: rgba(16, 185, 129, 0.15); color: var(--ok); }
         .sub-actions { display: flex; gap: 8px; }
 
-        /* ==========================================
-           ЭКРАН БАЛАНСА
-           ========================================== */
+        /* Баланс */
         .balance-label { font-size: 13px; color: var(--text2); }
         .balance-val-large { font-size: 46px; font-weight: 700; color: var(--text); margin-top: 4px; line-height: 1; }
         .balance-val-large span { font-size: 22px; color: var(--text3); margin-left: 4px; font-weight: 500; }
-
-        .promo-input-group { display: flex; gap: 12px; }
-        .form-input { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.2s; width: 100%;}
+        .promo-input-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .form-input { flex: 1; min-width: 140px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 13px; outline: none; transition: 0.2s; }
         .form-input:focus { border-color: var(--blue-btn); }
-        .btn-blue { background-color: var(--blue-btn); color: #ffffff; border: none; border-radius: 10px; padding: 0 16px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.2s; white-space: nowrap; }
+        .btn-blue { background-color: var(--blue-btn); color: #ffffff; border: none; border-radius: 10px; padding: 0 16px; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; height: 44px; }
         .btn-blue:active { opacity: 0.8; }
-
-        .payment-method { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: background 0.2s; }
+        .btn-dark { background: rgba(255,255,255,0.05); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 0 16px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; height: 44px; }
+        .btn-dark:active { background: rgba(255,255,255,0.1); }
+        
+        .payment-method { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: 0.2s; }
         .payment-method:active { background: rgba(255, 255, 255, 0.05); }
         .payment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-        
         .payment-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #8B5CF6, #3B82F6); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
-        
         .payment-title { font-size: 15px; font-weight: 600; }
         .payment-desc { font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.4; }
         .payment-limits { font-size: 12px; color: var(--text3); }
-
+        
         .list-menu { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden;}
         .list-item { padding: 20px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .list-item-title { font-size: 15px; font-weight: 500; }
         .list-item-icon { color: var(--text2); font-size: 14px; transition: transform 0.3s ease; }
-        
-        /* История транзакций */
         #historyContainer { display: none; padding: 0 20px 20px 20px; border-top: 1px solid var(--border); }
         .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
         .tx-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -177,64 +172,54 @@
         .tx-amount.minus { color: var(--text); font-weight: 600; }
 
         /* ==========================================
-           ПЛАВАЮЩЕЕ МЕНЮ НАВИГАЦИИ
+           ЭКРАН РЕФЕРАЛОВ
            ========================================== */
+        .ref-stats-grid { display: flex; gap: 12px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+        .ref-stats-grid::-webkit-scrollbar { display: none; }
+        .ref-stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; flex: 1; min-width: 130px; }
+        .ref-stat-title { font-size: 12px; color: var(--text3); margin-bottom: 8px; white-space: nowrap; }
+        .ref-stat-val { font-size: 24px; font-weight: 700; line-height: 1; }
+        .ref-stat-sub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+        
+        .text-green { color: var(--ok); }
+        .text-blue { color: var(--blue-text); }
+        
+        .ref-link-label { font-size: 13px; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+        .ref-link-label i { color: var(--blue-text); font-size: 14px; width: 16px; text-align: center; }
+        .ref-hint { font-size: 12px; color: var(--text3); margin-top: 16px; line-height: 1.4; }
+
+        .terms-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 16px; }
+        .term-item { display: flex; flex-direction: column; gap: 4px; }
+        .term-label { font-size: 12px; color: var(--text3); }
+        .term-val { font-size: 16px; font-weight: 600; }
+
+        /* Навигация */
         .bottom-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(32, 29, 24, 0.65); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px); 
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: fixed;
-            bottom: calc(16px + env(safe-area-inset-bottom)); 
-            left: 16px;
-            right: 16px;
-            padding: 6px;
-            z-index: 100;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
-            touch-action: none;
-            transform: translateZ(0); 
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(19, 26, 42, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); 
+            border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.08);
+            position: fixed; bottom: calc(16px + env(safe-area-inset-bottom)); left: 16px; right: 16px;
+            padding: 6px; z-index: 100; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); touch-action: none; transform: translateZ(0); 
         }
 
         .nav-indicator {
-            position: absolute;
-            top: 6px;
-            bottom: 6px;
-            left: 0;
-            background: rgba(217, 123, 63, 0.1); 
-            border: 1px solid var(--accent);
-            border-radius: 18px;
-            z-index: 0;
+            position: absolute; top: 6px; bottom: 6px; left: 0;
+            background: rgba(37, 99, 235, 0.15); /* Синеватая подсветка */
+            border: 1px solid var(--blue-text); border-radius: 18px; z-index: 0;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none; 
-            will-change: transform, width; 
+            pointer-events: none; will-change: transform, width; 
         }
         
         .nav-item {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text3);
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            padding: 10px 0;
-            position: relative;
-            z-index: 1;
-            user-select: none;
-            -webkit-user-select: none;
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text3); text-decoration: none; cursor: pointer; transition: color 0.3s ease;
+            padding: 10px 0; position: relative; z-index: 1; user-select: none; -webkit-user-select: none;
         }
         
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item i { font-size: 18px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 500; }
-        .nav-item.active { color: var(--accent); }
+        .nav-item.active { color: var(--blue-text); }
         
-        .page-header { padding: 16px 0 8px 0; font-size: 22px; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -242,7 +227,7 @@
 <div id="app-container">
     <div class="content-area">
         
-        <!-- ЭКРАН 1: ГЛАВНАЯ (Мои подписки) -->
+        <!-- ЭКРАН 1: ГЛАВНАЯ -->
         <div class="view active" id="view-home">
             <div class="wrap">
                 <h1 class="page-header serif">Мои подключения</h1>
@@ -250,7 +235,7 @@
             </div>
         </div>
 
-        <!-- ЭКРАН 2: ТАРИФЫ (Покупка) -->
+        <!-- ЭКРАН 2: ТАРИФЫ -->
         <div class="view" id="view-plans">
             <div class="wrap">
                 <h1 class="page-header serif">Тарифы</h1>
@@ -263,13 +248,11 @@
             <div class="wrap">
                 <h1 class="page-header serif">Баланс</h1>
                 
-                <!-- Текущий баланс -->
                 <div class="card" style="padding: 24px 20px;">
                     <div class="balance-label">Текущий баланс</div>
                     <div class="balance-val-large" id="balanceDisplay">0.00<span>₽</span></div>
                 </div>
 
-                <!-- Промокод -->
                 <div class="card">
                     <div class="card-title-small">Промокод</div>
                     <div class="promo-input-group">
@@ -278,10 +261,8 @@
                     </div>
                 </div>
 
-                <!-- Пополнение баланса -->
                 <div class="card">
                     <div class="card-title-small">Пополнение баланса</div>
-                    
                     <div class="payment-method" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa для оплаты')">
                         <div class="payment-header">
                             <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
@@ -292,30 +273,104 @@
                     </div>
                 </div>
 
-                <!-- История операций (выпадающий список) -->
                 <div class="list-menu">
                     <div class="list-item" id="historyToggleBtn" onclick="toggleHistory()">
                         <span class="list-item-title">История операций</span>
                         <i class="fas fa-chevron-down list-item-icon" id="historyIcon"></i>
                     </div>
                     <div id="historyContainer">
-                        <div id="txHistory">
-                            <!-- Заполняется из JS -->
+                        <div id="txHistory"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 4: РЕФЕРАЛЫ -->
+        <div class="view" id="view-referrals">
+            <div class="wrap">
+                <h1 class="page-header serif">Реферальная программа</h1>
+                
+                <!-- Статистика -->
+                <div class="ref-stats-grid">
+                    <div class="ref-stat-card">
+                        <div class="ref-stat-title">Всего рефералов</div>
+                        <div class="ref-stat-val">0</div>
+                        <div class="ref-stat-sub">0 активных</div>
+                    </div>
+                    <div class="ref-stat-card">
+                        <div class="ref-stat-title">Общий заработок</div>
+                        <div class="ref-stat-val text-green">+0.00 ₽</div>
+                    </div>
+                    <div class="ref-stat-card">
+                        <div class="ref-stat-title">Комиссия</div>
+                        <div class="ref-stat-val text-blue">25%</div>
+                    </div>
+                </div>
+
+                <!-- Реферальные ссылки -->
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 16px; font-weight: 500; display: block;">Ваши реферальные ссылки</h3>
+                    
+                    <div class="ref-link-label" style="margin-top: 0;"><i class="fab fa-telegram-plane"></i> Ссылка на бота</div>
+                    <div class="promo-input-group">
+                        <input type="text" class="form-input" value="https://t.me/vpn_bot?start=ref123" readonly>
+                        <button class="btn-blue" onclick="copyText('https://t.me/vpn_bot?start=ref123', 'Ссылка на бота скопирована!')">
+                            <i class="far fa-copy"></i> Копировать
+                        </button>
+                    </div>
+
+                    <div class="ref-link-label"><i class="fas fa-link"></i> Ссылка на кабинет</div>
+                    <div class="promo-input-group">
+                        <input type="text" class="form-input" value="https://site.com/login?ref=123" readonly>
+                        <button class="btn-blue" onclick="copyText('https://site.com/login?ref=123', 'Ссылка скопирована!')">
+                            <i class="far fa-copy"></i> Копировать
+                        </button>
+                        <button class="btn-dark" onclick="shareRefLink()">
+                            <i class="fas fa-share-nodes"></i> Поделиться
+                        </button>
+                    </div>
+
+                    <p class="ref-hint">Поделитесь ссылкой с друзьями. Когда они зарегистрируются и оплатят, вы получите 25% комиссии!</p>
+                </div>
+
+                <!-- Условия программы -->
+                <div class="card">
+                    <h3 style="font-size: 16px; margin-bottom: 20px; font-weight: 500; display: block;">Условия программы</h3>
+                    <div class="terms-grid">
+                        <div class="term-item">
+                            <div class="term-label">Комиссия</div>
+                            <div class="term-val">25%</div>
+                        </div>
+                        <div class="term-item">
+                            <div class="term-label">Мин. пополнение</div>
+                            <div class="term-val">100.00 ₽</div>
+                        </div>
+                        <div class="term-item">
+                            <div class="term-label">Бонус новому пользователю</div>
+                            <div class="term-val text-green">+100.00 ₽</div>
+                        </div>
+                        <div class="term-item">
+                            <div class="term-label">Бонус пригласившему</div>
+                            <div class="term-val text-green">+100.00 ₽</div>
                         </div>
                     </div>
                 </div>
 
+                <h3 class="page-header serif" style="font-size: 18px; margin-top: 8px;">Ваши рефералы</h3>
+                <div style="text-align: center; color: var(--text3); font-size: 14px; padding: 20px;">
+                    У вас пока нет рефералов
+                </div>
             </div>
         </div>
 
-        <!-- ЭКРАН 4: НАСТРОЙКИ / ПРОФИЛЬ -->
+        <!-- ЭКРАН 5: ПРОФИЛЬ -->
         <div class="view" id="view-profile">
             <div class="wrap">
                 <h1 class="page-header serif">Профиль</h1>
                 
                 <div class="card">
                     <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-                        <div style="width: 50px; height: 50px; border-radius: 25px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 24px;">
+                        <div style="width: 50px; height: 50px; border-radius: 25px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: var(--blue-text); font-size: 24px;">
                             <i class="fas fa-user"></i>
                         </div>
                         <div>
@@ -325,13 +380,13 @@
                     </div>
                 </div>
 
-                <div class="card" onclick="Telegram.WebApp.showAlert('Раздел в разработке')" style="cursor: pointer;">
-                    <h3><i class="fas fa-gift"></i> Пригласить друга</h3>
-                    <p style="font-size: 13px; color: var(--text2);">Получите бонусные дни за приглашенных друзей</p>
+                <div class="card" onclick="document.querySelectorAll('.nav-item')[3].click()" style="cursor: pointer;">
+                    <h3><i class="fas fa-gift" style="color: var(--ok)"></i> Пригласить друга</h3>
+                    <p style="font-size: 13px; color: var(--text2);">Получите бонусные рубли за приглашенных друзей</p>
                 </div>
 
                 <div class="card" onclick="Telegram.WebApp.openTelegramLink('https://t.me/Nachyn132')" style="cursor: pointer;">
-                    <h3><i class="fas fa-headset"></i> Поддержка</h3>
+                    <h3><i class="fas fa-headset" style="color: var(--blue-text)"></i> Поддержка</h3>
                     <p style="font-size: 13px; color: var(--text2);">Написать оператору в Telegram</p>
                 </div>
             </div>
@@ -339,7 +394,7 @@
 
     </div>
 
-    <!-- Навигация -->
+    <!-- Навигация (5 вкладок) -->
     <div class="bottom-nav" id="bottomNav">
         <div class="nav-indicator" id="navIndicator"></div>
         <a class="nav-item active" onclick="switchTab('view-home', this)">
@@ -354,6 +409,10 @@
             <i class="fas fa-wallet"></i>
             <span>Баланс</span>
         </a>
+        <a class="nav-item" onclick="switchTab('view-referrals', this)">
+            <i class="fas fa-user-group"></i>
+            <span>Рефералы</span>
+        </a>
         <a class="nav-item" onclick="switchTab('view-profile', this)">
             <i class="fas fa-user"></i>
             <span>Профиль</span>
@@ -364,8 +423,8 @@
 <script>
     const tg = window.Telegram.WebApp;
     tg.expand();
-    tg.setHeaderColor('#1c1915'); 
-    tg.setBackgroundColor('#14120f');
+    tg.setHeaderColor('#131a2a'); 
+    tg.setBackgroundColor('#0a0f1a');
     tg.ready();
 
     let userBalance = 1240;
@@ -412,11 +471,9 @@
         tg.HapticFeedback.selectionChanged();
     }
 
-    // Раскрытие истории операций
     function toggleHistory() {
         const container = document.getElementById('historyContainer');
         const icon = document.getElementById('historyIcon');
-        
         if (container.style.display === 'block') {
             container.style.display = 'none';
             icon.style.transform = 'rotate(0deg)';
@@ -431,14 +488,12 @@
             const user = tg.initDataUnsafe.user;
             const nameEl = document.getElementById('tgName');
             const idEl = document.getElementById('tgId');
-            
             if(nameEl) nameEl.textContent = `${user.first_name} ${user.last_name || ''}`.trim();
             if(idEl) idEl.textContent = `ID: ${user.id}`;
         }
     }
 
     function renderBalance() {
-        // Форматируем баланс: добавляем .00 в конце
         document.getElementById('balanceDisplay').innerHTML = `${userBalance}.00<span>₽</span>`;
     }
 
@@ -521,6 +576,12 @@
         tg.HapticFeedback.notificationOccurred('success');
         tg.showAlert(successMessage);
     }
+    
+    function shareRefLink() {
+        const text = encodeURIComponent('Присоединяйся к быстрому VPN!');
+        const url = encodeURIComponent('https://t.me/vpn_bot?start=ref123');
+        tg.openTelegramLink(`https://t.me/share/url?url=${url}&text=${text}`);
+    }
 
     function buyPlan(id, name, price) {
         if (userBalance < price) {
@@ -541,7 +602,7 @@
         });
     }
 
-    // Логика непрерывного скольжения (Drag)
+    // Drag-свайпы
     const navBar = document.getElementById('bottomNav');
     let isDragging = false;
 
@@ -549,9 +610,7 @@
         const elem = document.elementFromPoint(clientX, clientY);
         if (!elem) return;
         const navItem = elem.closest('.nav-item');
-        if (navItem && !navItem.classList.contains('active')) {
-            navItem.click();
-        }
+        if (navItem && !navItem.classList.contains('active')) navItem.click();
     }
 
     navBar.addEventListener('touchmove', (e) => {
@@ -590,11 +649,7 @@
 
     setTimeout(() => {
         const activeNav = document.querySelector('.nav-item.active');
-        if(activeNav) {
-            const indicator = document.getElementById('navIndicator');
-            indicator.style.transform = `translateX(${activeNav.offsetLeft}px)`;
-            indicator.style.width = `${activeNav.offsetWidth}px`;
-        }
+        if(activeNav) activeNav.click();
     }, 100);
 </script>
 </body>
