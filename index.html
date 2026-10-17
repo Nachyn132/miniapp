@@ -256,6 +256,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             /* Важно для позиционирования ползунка */
             position: fixed; 
+            touch-action: none; /* Запрещает системный скролл страницы при жестах на панели */
         }
 
         /* Тот самый подвижный ползунок */
@@ -614,47 +615,47 @@
     }
 
     // ==========================================
-    // ЛОГИКА СВАЙПА ПО НИЖНЕЙ ПАНЕЛИ
+    // ЛОГИКА НЕПРЕРЫВНОГО СКОЛЬЖЕНИЯ (DRAG)
     // ==========================================
     const navBar = document.getElementById('bottomNav');
-    const navItems = document.querySelectorAll('.nav-item');
-    let startX = 0;
-    let endX = 0;
-    
-    function handleSwipe() {
-        if (!startX || !endX) return;
-        const diffX = startX - endX;
+    let isDragging = false;
+
+    function handleDrag(clientX, clientY) {
+        // Находим элемент, над которым сейчас находится палец
+        const elem = document.elementFromPoint(clientX, clientY);
+        if (!elem) return;
         
-        // Если жест был достаточно длинным (длиннее 30px)
-        if (Math.abs(diffX) > 30) { 
-            // Находим индекс текущей активной вкладки
-            const currentIndex = Array.from(navItems).findIndex(item => item.classList.contains('active'));
-            
-            if (diffX > 0 && currentIndex < navItems.length - 1) {
-                // Свайп влево -> переключаем на следующую кнопку (имитируем клик)
-                navItems[currentIndex + 1].click();
-            } else if (diffX < 0 && currentIndex > 0) {
-                // Свайп вправо -> переключаем на предыдущую кнопку
-                navItems[currentIndex - 1].click();
-            }
+        // Проверяем, является ли элемент (или его родитель) кнопкой меню
+        const navItem = elem.closest('.nav-item');
+        
+        // Если палец зашел на новую кнопку, мгновенно переключаем вкладку
+        if (navItem && !navItem.classList.contains('active')) {
+            navItem.click(); // Вызывает функцию switchTab и вибрацию
         }
-        startX = 0;
-        endX = 0;
     }
 
-    // Обработчики касания (для мобильных телефонов)
-    navBar.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
-    navBar.addEventListener('touchmove', e => { endX = e.touches[0].clientX; }, {passive: true});
-    navBar.addEventListener('touchend', () => { handleSwipe(); });
+    // Обработчики для смартфонов (Touch)
+    navBar.addEventListener('touchmove', (e) => {
+        // Блокируем стандартные жесты браузера, чтобы меню не дергалось
+        e.preventDefault(); 
+        const touch = e.touches[0];
+        handleDrag(touch.clientX, touch.clientY);
+    }, { passive: false }); // passive: false обязательно для работы preventDefault()
 
-    // Обработчики мыши (чтобы можно было протестировать с ПК в браузере)
-    let isDragging = false;
-    navBar.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX; });
-    navBar.addEventListener('mousemove', e => { if(isDragging) endX = e.clientX; });
-    navBar.addEventListener('mouseup', () => { if(isDragging) { isDragging = false; handleSwipe(); }});
-    navBar.addEventListener('mouseleave', () => { isDragging = false; });
+    // Обработчики для ПК (Мышь) - для удобства тестирования
+    navBar.addEventListener('mousedown', (e) => { 
+        isDragging = true; 
+        handleDrag(e.clientX, e.clientY);
+    });
+    window.addEventListener('mousemove', (e) => { 
+        if (isDragging) handleDrag(e.clientX, e.clientY);
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
 
-    // Устанавливаем ползунок на первую кнопку при загрузке страницы
+
+    // ==========================================
+    // ИНИЦИАЛИЗАЦИЯ
+    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
         const activeNav = document.querySelector('.nav-item.active');
         if(activeNav) {
@@ -664,7 +665,7 @@
         }
     });
 
-    // Также поправляем ползунок, если телефон перевернут (сменилась ширина экрана)
+    // Поправляем ползунок при повороте экрана
     window.addEventListener('resize', () => {
         const activeNav = document.querySelector('.nav-item.active');
         if(activeNav) {
@@ -674,14 +675,13 @@
         }
     });
 
-    // Вызовы отрисовки
     renderUserData();
     renderBalance();
     renderSubscriptions();
     renderPlans();
     renderTransactions();
 
-    // Даем микро-задержку при старте для точного вычисления позиции ползунка на iOS
+    // Задержка для точного позиционирования ползунка при старте на iOS
     setTimeout(() => {
         const activeNav = document.querySelector('.nav-item.active');
         if(activeNav) activeNav.click();
