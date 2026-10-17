@@ -3,252 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Личный кабинет VPN</title>
+    <title>HerbisVPN - Мини-приложение Telegram</title>
+    <!-- Telegram Web Apps API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        /* Базовые переменные и стили, адаптированные под Telegram */
         :root {
-            --bg-color: #0F1218;
-            --card-bg: #161A23;
-            --border-color: #262B34;
-            --accent: #FF9F43;
-            --text-main: #FFFFFF;
-            --text-muted: #848B98;
-            --blue-accent: #3B82F6;
-            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            /* Используем цвета темы Telegram по умолчанию, с фолбеками */
+            --tg-theme-bg-color: #14120f;
+            --tg-theme-secondary-bg-color: #1c1915;
+            --tg-theme-text-color: #f2ede4;
+            --tg-theme-hint-color: #a89e8f;
+            --tg-theme-link-color: #d97b3f;
+            --tg-theme-button-color: #d97b3f;
+            --tg-theme-button-text-color: #14120f;
+
+            --bg: var(--tg-theme-bg-color, #14120f);
+            --bg2: var(--tg-theme-secondary-bg-color, #1c1915);
+            --card: #201d18; /* Немного светлее bg для карточек */
+            --border: #322d25;
+            --accent: var(--tg-theme-button-color, #d97b3f);
+            --accent-soft: rgba(217,123,63,0.12);
+            --text: var(--tg-theme-text-color, #f2ede4);
+            --text2: var(--tg-theme-hint-color, #a89e8f);
+            --text3: #6f6858;
+            --ok: #7fae7a;
+            --warn: #d9a63f;
+            --err: #c2665b;
+            
+            --nav-height: 60px;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-family);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 90px;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            font-family: 'Inter', sans-serif; 
+            /* Предотвращаем скролл body, скроллиться будет контейнер */
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .serif { font-family: 'Fraunces', serif; font-weight: 600; }
+        
+        /* Основной контейнер приложения */
+        #app-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* --- Стили для переключения страниц --- */
-        .page {
-            display: none; /* Скрываем все страницы по умолчанию */
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .page.active {
-            display: block; /* Показываем только активную */
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Область контента со скроллом */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            /* Плавный скролл на iOS */
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: var(--nav-height);
         }
 
-        /* --- Общие стили шапки и контейнера --- */
-        .header {
+        .wrap { 
+            padding: 16px; 
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Управление отображением экранов */
+        .view { display: none; }
+        .view.active { 
+            display: block; 
+            animation: fade 0.25s ease; 
+        }
+        @keyframes fade { 
+            from { opacity: 0; transform: translateY(6px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        /* Элементы UI */
+        .btn { 
+            padding: 12px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 15px; 
+            border: none; 
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn:active { opacity: 0.8; }
+        
+        .btn-primary { 
+            background: var(--accent); 
+            color: var(--tg-theme-button-text-color, #14120f); 
+            width: 100%;
+        }
+        
+        .btn-ghost { 
+            background: transparent; 
+            border: 1px solid var(--border); 
+            color: var(--text); 
+            width: 100%;
+        }
+        
+        .btn-sm { padding: 8px 14px; font-size: 13px; width: auto; }
+
+        .card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
+        }
+        
+        .card h3 { 
+            font-size: 16px; 
+            margin-bottom: 14px; 
+            display: flex;
+            align-items: center;
+        }
+        .card h3 i { 
+            color: var(--accent); 
+            margin-right: 8px; 
+        }
+
+        /* Тарифы */
+        .plans-grid { display: flex; flex-direction: column; gap: 12px; }
+        .plan { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            padding: 16px; 
+        }
+        .plan.featured { 
+            border-color: var(--accent); 
+            background: linear-gradient(180deg, var(--accent-soft), var(--card) 55%); 
+        }
+        .plan-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            margin-bottom: 12px; 
+        }
+        .plan-tag { font-size: 11px; color: var(--accent); font-weight: 700; margin-bottom: 4px; }
+        .plan-name { font-size: 16px; font-weight: 600; }
+        .plan-desc { font-size: 13px; color: var(--text3); margin-top: 4px; }
+        .plan-price-block { text-align: right; }
+        .plan-price { font-family: 'Fraunces', serif; font-size: 20px; }
+        .plan-discount { font-size: 11px; color: var(--ok); font-weight: 600; margin-top: 2px;}
+        
+        .plan-specs { 
+            display: flex; 
+            gap: 12px; 
+            padding: 10px 0; 
+            margin: 10px 0; 
+            border-top: 1px solid var(--border); 
+            border-bottom: 1px solid var(--border); 
+            flex-wrap: wrap; 
+        }
+        .spec { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); }
+        .spec i { color: var(--accent); font-size: 13px; }
+        
+        .plan-features { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .plan-features li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
+        .plan-features i { color: var(--ok); font-size: 12px; }
+
+        /* Баланс */
+        .balance-hero {
+            text-align: center;
+            padding: 20px 0;
+            background: var(--card);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .balance-label { font-size: 14px; color: var(--text2); margin-bottom: 8px; }
+        .balance-val { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; color: var(--text); }
+        .balance-val small { font-family: 'Inter', sans-serif; font-size: 20px; color: var(--text3); }
+        
+        /* Мои подписки */
+        .sub-card { 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            border-left: 4px solid var(--accent); 
+        }
+        .sub-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .sub-name { font-weight: 600; font-size: 16px; }
+        .sub-meta { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+        .config-box { 
+            background: var(--bg2); 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            padding: 12px; 
+            font-family: monospace; 
+            font-size: 12px; 
+            color: var(--text2); 
+            word-break: break-all; 
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: #12141D;
         }
-        .header-left { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; }
-        .header-icon {
-            width: 24px; height: 24px; background-color: #0EA5E9; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 14px;
-        }
-        .header-right { display: flex; align-items: center; gap: 16px; color: var(--text-muted); }
-        .lang-selector {
-            display: flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05);
-            padding: 4px 8px; border-radius: 12px; font-size: 14px;
-        }
-        .container { padding: 24px 16px; }
-
-        /* --- Стили элементов контента --- */
-        .greeting { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
-        .sub-greeting {
-            color: var(--text-muted); font-size: 15px; margin-bottom: 40px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .badge {
-            background-color: rgba(29, 58, 138, 0.4); border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #93C5FD; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
-        }
-        .page-title { font-size: 24px; font-weight: 700; margin-top: 0; margin-bottom: 24px; }
-
-        .card {
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 20px; padding: 32px 24px 24px; text-align: center;
-            margin-bottom: 16px; position: relative;
-        }
-        .card-icon {
-            width: 48px; height: 48px; border: 1px solid rgba(255, 159, 67, 0.2);
-            color: var(--accent); border-radius: 14px; display: inline-flex;
-            align-items: center; justify-content: center; font-size: 20px;
-            position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
-            background-color: #1A1A1A;
-        }
-        .card-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; margin-top: 8px; }
-        .card-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
-        .price-badge {
-            border: 1px solid rgba(255, 159, 67, 0.3); color: var(--accent);
-            padding: 8px 24px; border-radius: 12px; font-size: 20px; font-weight: 600;
-            display: inline-block; margin-bottom: 28px;
-        }
-        .stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 24px; }
-        .stat-item h3 { margin: 0; font-size: 28px; font-weight: 700; }
-        .stat-item p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; }
+        .config-box i { padding: 4px; color: var(--accent); cursor: pointer; }
         
-        .inner-balance {
-            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px; padding: 16px; text-align: left; margin-bottom: 16px;
-        }
-        .balance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-        .balance-label { color: var(--text-muted); font-size: 14px; }
-        .balance-value { font-size: 15px; font-weight: 600; color: var(--accent); }
-        .balance-hint { color: var(--accent); font-size: 13px; }
-        .btn-orange {
-            background-color: var(--accent); color: #000; border: none; border-radius: 14px;
-            padding: 16px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer;
-        }
-        .dashed-btn {
-            border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 18px;
-            text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 16px; cursor: pointer;
-        }
-        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .grid-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; }
-        .grid-card-header { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
-        .grid-card-arrow { position: absolute; right: 16px; top: 16px; color: rgba(255, 255, 255, 0.2); font-size: 12px; }
-        .grid-card-value { font-size: 24px; font-weight: 600; }
-        .grid-card-value.blue { color: var(--blue-accent); }
-        .grid-card-sub { color: var(--blue-accent); font-size: 13px; margin-top: 4px; }
+        .badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+        .badge-ok { background: rgba(127,174,122,0.15); color: var(--ok); }
+        
+        .sub-actions { display: flex; gap: 8px; }
 
-        /* --- Навигация --- */
+        /* История */
+        .tx-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+        .tx-row:last-child { border-bottom: none; }
+        .tx-desc { color: var(--text); }
+        .tx-date { color: var(--text3); font-size: 12px; display: block; margin-top: 4px;}
+        .tx-amount.plus { color: var(--ok); font-weight: 600; }
+        .tx-amount.minus { color: var(--text); font-weight: 600; }
+
+        /* Навигация (Bottom Tab Bar) */
         .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0; background-color: #12141D;
-            border-top: 1px solid var(--border-color); display: flex; justify-content: space-around;
-            padding: 12px 8px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 100;
+            display: flex;
+            background: var(--bg);
+            border-top: 1px solid var(--border);
+            height: var(--nav-height);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            /* Учет безопасной зоны на iOS */
+            padding-bottom: env(safe-area-inset-bottom); 
+            z-index: 100;
         }
+        
         .nav-item {
-            display: flex; flex-direction: column; align-items: center; color: var(--text-muted);
-            font-size: 11px; gap: 6px; padding: 8px 16px; border-radius: 14px; cursor: pointer;
-            transition: 0.2s;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text3);
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.2s;
         }
-        .nav-item.active {
-            background-color: rgba(29, 58, 138, 0.3); border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--blue-accent);
+        
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item span { font-size: 10px; font-weight: 500; }
+        
+        .nav-item.active { color: var(--accent); }
+        
+        /* Заголовок страницы (нативный для ТГ, но делаем свой) */
+        .page-header {
+            padding: 16px 0 8px 0;
+            font-size: 22px;
+            margin-bottom: 16px;
         }
-        .nav-icon { font-size: 20px; line-height: 1; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text3);
+        }
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="header-left"><div class="header-icon">👻</div>Ghost VPN</div>
-        <div class="header-right"><span>🔔</span><div class="lang-selector">🇷🇺 RU ⌄</div><span>≡</span></div>
-    </div>
-
-    <!-- ЭКРАН 1: ГЛАВНАЯ (active по умолчанию) -->
-    <div id="page-home" class="page active">
-        <div class="container">
-            <div class="greeting">Добро пожаловать, <span id="userName">Гость</span>!</div>
-            <div class="sub-greeting">Ваша подписка <span class="badge">★ Base</span></div>
-            
-            <div class="card">
-                <div class="card-icon">⚡</div>
-                <div class="card-title">Пробная подписка</div>
-                <div class="card-subtitle">Начните с пробной подписки</div>
-                <div class="price-badge">1 ₽</div>
-                <div class="stats">
-                    <div class="stat-item"><h3>3</h3><p>дней</p></div>
-                    <div class="stat-item"><h3>5</h3><p>ГБ</p></div>
-                    <div class="stat-item"><h3>5</h3><p>устройств</p></div>
+<div id="app-container">
+    <div class="content-area">
+        
+        <!-- ЭКРАН 1: ГЛАВНАЯ (Мои подписки) -->
+        <div class="view active" id="view-home">
+            <div class="wrap">
+                <h1 class="page-header serif">Мои подключения</h1>
+                
+                <div id="mySubsList">
+                    <!-- Заполняется из JS -->
                 </div>
-                <div class="inner-balance">
-                    <div class="balance-row"><span class="balance-label">Текущий баланс</span><span class="balance-value">0.00 ₽</span></div>
-                    <div class="balance-hint">Пополните баланс для активации</div>
-                </div>
-                <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">Пополнить баланс</button>
-            </div>
-
-            <div class="dashed-btn" onclick="switchPage('page-subscriptions', document.getElementById('nav-sub'))">Посмотреть тарифы и купить подписку</div>
-
-            <div class="grid-cards">
-                <div class="grid-card"><div class="grid-card-header"><span>💳</span> Баланс</div><div class="grid-card-arrow">ᐳ</div><div class="grid-card-value blue">0.00 ₽</div></div>
-                <div class="grid-card"><div class="grid-card-header"><span>👥</span> Рефералы</div><div class="grid-card-arrow">ᐳ</div><div class="grid-card-value">0</div><div class="grid-card-sub">+0.00 ₽</div></div>
             </div>
         </div>
-    </div>
 
-    <!-- ЭКРАН 2: ПОДПИСКИ -->
-    <div id="page-subscriptions" class="page">
-        <div class="container">
-            <h1 class="page-title">Мои подписки</h1>
-            
-            <div class="card" style="margin-top: 24px;">
-                <div class="card-icon">⚡</div>
-                <div class="card-title">Пробная подписка</div>
-                <div class="card-subtitle">Начните с пробной подписки</div>
-                <div class="price-badge">1 ₽</div>
-                <div class="stats">
-                    <div class="stat-item"><h3>3</h3><p>дней</p></div>
-                    <div class="stat-item"><h3>5</h3><p>ГБ</p></div>
-                    <div class="stat-item"><h3>5</h3><p>устройств</p></div>
+        <!-- ЭКРАН 2: ТАРИФЫ (Покупка) -->
+        <div class="view" id="view-plans">
+            <div class="wrap">
+                <h1 class="page-header serif">Тарифы</h1>
+                
+                <div class="plans-grid" id="plansContainer">
+                    <!-- Заполняется из JS -->
                 </div>
-                <div class="inner-balance">
-                    <div class="balance-row"><span class="balance-label">Текущий баланс</span><span class="balance-value">0.00 ₽</span></div>
-                    <div class="balance-hint">Пополните баланс для активации</div>
-                </div>
-                <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">Пополнить баланс</button>
             </div>
-            
-            <div class="dashed-btn">Посмотреть тарифы и купить подписку</div>
         </div>
+
+        <!-- ЭКРАН 3: БАЛАНС -->
+        <div class="view" id="view-balance">
+            <div class="wrap">
+                <h1 class="page-header serif">Баланс</h1>
+                
+                <div class="balance-hero">
+                    <div class="balance-label">Текущий баланс</div>
+                    <div class="balance-val" id="balanceDisplay">0<small> ₽</small></div>
+                </div>
+
+                <button class="btn btn-primary" style="margin-bottom: 24px;" onclick="Telegram.WebApp.showAlert('Здесь будет вызов платежки (ЮKassa / Telegram Stars / CryptoBot)')">
+                    <i class="fas fa-plus-circle"></i> Пополнить баланс
+                </button>
+
+                <div class="card">
+                    <h3><i class="fas fa-history"></i> История операций</h3>
+                    <div id="txHistory">
+                        <!-- Заполняется из JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 4: НАСТРОЙКИ / ПРОФИЛЬ -->
+        <div class="view" id="view-profile">
+            <div class="wrap">
+                <h1 class="page-header serif">Профиль</h1>
+                
+                <div class="card">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; border-radius: 25px; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 24px;">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 16px;" id="tgName">Пользователь</div>
+                            <div style="color: var(--text3); font-size: 13px;" id="tgId">ID: Неизвестно</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" onclick="Telegram.WebApp.showAlert('Раздел в разработке')" style="cursor: pointer;">
+                    <h3><i class="fas fa-gift"></i> Пригласить друга</h3>
+                    <p style="font-size: 13px; color: var(--text2);">Получите бонусные дни за приглашенных друзей</p>
+                </div>
+
+                <div class="card" onclick="Telegram.WebApp.openTelegramLink('https://t.me/durov')" style="cursor: pointer;">
+                    <h3><i class="fas fa-headset"></i> Поддержка</h3>
+                    <p style="font-size: 13px; color: var(--text2);">Написать оператору в Telegram</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
+    <!-- Навигация -->
     <div class="bottom-nav">
-        <!-- При клике вызываем функцию switchPage с ID нужной страницы -->
-        <div class="nav-item active" id="nav-home" onclick="switchPage('page-home', this)">
-            <span class="nav-icon">🏠</span><span>Главная</span>
-        </div>
-        <div class="nav-item" id="nav-sub" onclick="switchPage('page-subscriptions', this)">
-            <span class="nav-icon">✨</span><span>Подписка</span>
-        </div>
-        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
-            <span class="nav-icon">💳</span><span>Баланс</span>
-        </div>
-        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
-            <span class="nav-icon">👥</span><span>Рефералы</span>
-        </div>
-        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
-            <span class="nav-icon">💬</span><span>Поддержка</span>
-        </div>
+        <a class="nav-item active" onclick="switchTab('view-home', this)">
+            <i class="fas fa-shield-halved"></i>
+            <span>VPN</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('view-plans', this)">
+            <i class="fas fa-cart-shopping"></i>
+            <span>Тарифы</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('view-balance', this)">
+            <i class="fas fa-wallet"></i>
+            <span>Баланс</span>
+        </a>
+        <a class="nav-item" onclick="switchTab('view-profile', this)">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </a>
     </div>
+</div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+<script>
+    // Инициализация Telegram Web App
+    const tg = window.Telegram.WebApp;
+    
+    // Расширяем на весь экран
+    tg.expand();
+    
+    // Устанавливаем цвета хеадера и фона из темы ТГ
+    tg.setHeaderColor('secondary_bg_color');
+    tg.setBackgroundColor('bg_color');
 
-        // Подстановка имени
+    // Сообщаем ТГ, что приложение готово
+    tg.ready();
+
+    // ==========================================
+    // ДАННЫЕ (Имитация бэкенда)
+    // ==========================================
+    let userBalance = 1240;
+    
+    const plans = [
+        {id: 1, name: 'Месяц', desc: 'Самый популярный вариант', price: 200, duration: '30 дней', devices: '1 устройство', featured: true},
+        {id: 2, name: '3 месяца', desc: 'Дешевле, чем платить каждый месяц', price: 520, duration: '90 дней', devices: '1 устройство', featured: false},
+        {id: 3, name: 'Год', desc: 'Максимальная выгода', price: 1800, duration: '365 дней', devices: '1 устройство', featured: false},
+    ];
+
+    const mySubscriptions = [
+        { 
+            id: 101, 
+            name: 'Месяц', 
+            price: 200, 
+            link: 'vless://example-token-12345@server.com:443?security=reality', 
+            purchasedAt: Date.now() - 5*86400000, 
+            durationDays: 30 
+        }
+    ];
+
+    const transactions = [
+        { id: 1, desc: 'Покупка «Месяц»', amount: -200, date: Date.now() - 5*86400000 },
+        { id: 2, desc: 'Пополнение баланса', amount: 500, date: Date.now() - 10*86400000 },
+    ];
+
+    // ==========================================
+    // ЛОГИКА ОТОБРАЖЕНИЯ
+    // ==========================================
+
+    // Переключение вкладок
+    function switchTab(viewId, navElement) {
+        // Скрываем все экраны
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        // Убираем выделение со всех кнопок
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        // Показываем нужный экран
+        document.getElementById(viewId).classList.add('active');
+        // Выделяем нажатую кнопку
+        navElement.classList.add('active');
+        
+        // Haptic feedback (вибрация) при переключении
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    // Рендер данных пользователя из Telegram
+    function renderUserData() {
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
+            const user = tg.initDataUnsafe.user;
+            const nameEl = document.getElementById('tgName');
+            const idEl = document.getElementById('tgId');
+            
+            if(nameEl) nameEl.textContent = `${user.first_name} ${user.last_name || ''}`.trim();
+            if(idEl) idEl.textContent = `ID: ${user.id}`;
+        }
+    }
+
+    // Рендер баланса
+    function renderBalance() {
+        document.getElementById('balanceDisplay').innerHTML = `${userBalance}<small> ₽</small>`;
+    }
+
+    // Рендер подписок (Главный экран)
+    function renderSubscriptions() {
+        const container = document.getElementById('mySubsList');
+        
+        if (mySubscriptions.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <p>У вас пока нет активных подключений.</p>
+                    <button class="btn btn-primary btn-sm" onclick="document.querySelectorAll('.nav-item')[1].click()">Выбрать тариф</button>
+                </div>
+            `;
+            return;
         }
 
-        // Функция переключения страниц
-        function switchPage(pageId, navElement) {
-            // 1. Скрываем все страницы (убираем класс active)
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
+        container.innerHTML = mySubscriptions.map(s => {
+            const daysLeft = s.durationDays - Math.floor((Date.now() - s.purchasedAt) / 86400000);
             
-            // 2. Убираем выделение (класс active) со всех кнопок меню
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('active');
-            });
+            return `
+                <div class="sub-card">
+                    <div class="sub-head">
+                        <span class="sub-name">${s.name}</span>
+                        <span class="badge badge-ok">Осталось ${daysLeft} дн.</span>
+                    </div>
+                    
+                    <div class="config-box" onclick="copyText('${s.link}', 'Ссылка скопирована!')">
+                        <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 85%;">${s.link}</span>
+                        <i class="fas fa-copy"></i>
+                    </div>
+                    
+                    <div class="sub-actions">
+                        <button class="btn btn-primary btn-sm" onclick="Telegram.WebApp.showAlert('Продление тарифа (вызов API)')" style="flex: 1;">Продлить</button>
+                        <button class="btn btn-ghost btn-sm" onclick="Telegram.WebApp.showPopup({title: 'QR код', message: 'Здесь должен генерироваться QR код для конфигурации', buttons: [{type: 'close'}]})"><i class="fas fa-qrcode"></i></button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 
-            // 3. Показываем нужную страницу
-            document.getElementById(pageId).classList.add('active');
-            
-            // 4. Делаем активной ту кнопку меню, на которую нажали
-            navElement.classList.add('active');
+    // Рендер тарифов
+    function renderPlans() {
+        const container = document.getElementById('plansContainer');
+        
+        container.innerHTML = plans.map(p => `
+            <div class="plan ${p.featured ? 'featured' : ''}">
+                <div class="plan-top">
+                    <div>
+                        ${p.featured ? '<div class="plan-tag">ХИТ ПРОДАЖ</div>' : ''}
+                        <div class="plan-name">${p.name}</div>
+                        <div class="plan-desc">${p.desc}</div>
+                    </div>
+                    <div class="plan-price-block">
+                        <div class="plan-price">${p.price} ₽</div>
+                    </div>
+                </div>
+                
+                <div class="plan-specs">
+                    <div class="spec"><i class="fas fa-calendar"></i>${p.duration}</div>
+                    <div class="spec"><i class="fas fa-mobile-screen"></i>${p.devices}</div>
+                </div>
+                
+                <button class="btn ${p.featured ? 'btn-primary' : 'btn-ghost'}" onclick="buyPlan(${p.id}, '${p.name}', ${p.price})">Купить</button>
+            </div>
+        `).join('');
+    }
+
+    // Рендер истории транзакций
+    function renderTransactions() {
+        const container = document.getElementById('txHistory');
+        
+        if (transactions.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text3); font-size: 13px; padding: 20px 0;">Нет операций</div>`;
+            return;
         }
-    </script>
+
+        container.innerHTML = transactions.map(t => {
+            const isPlus = t.amount > 0;
+            const dateStr = new Date(t.date).toLocaleDateString('ru-RU', {day: 'numeric', month: 'short'});
+            return `
+                <div class="tx-row">
+                    <div>
+                        <div class="tx-desc">${t.desc}</div>
+                        <div class="tx-date">${dateStr}</div>
+                    </div>
+                    <div class="tx-amount ${isPlus ? 'plus' : 'minus'}">${isPlus ? '+' : ''}${t.amount} ₽</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // ==========================================
+    // ДЕЙСТВИЯ
+    // ==========================================
+
+    // Копирование в буфер (в ТГ Web App лучше использовать встроенные методы, если есть, иначе fallback)
+    function copyText(text, successMessage) {
+        // Fallback для веба/ТГ
+        const el = document.createElement('textarea');
+        el.value = text;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        
+        tg.HapticFeedback.notificationOccurred('success');
+        tg.showAlert(successMessage);
+    }
+
+    // Имитация покупки
+    function buyPlan(id, name, price) {
+        if (userBalance < price) {
+            tg.showPopup({
+                title: 'Недостаточно средств',
+                message: `Для покупки тарифа «${name}» нужно пополнить баланс на ${price - userBalance} ₽.`,
+                buttons: [
+                    {id: 'deposit', type: 'default', text: 'Пополнить'},
+                    {type: 'cancel'}
+                ]
+            }, function(btnId) {
+                if (btnId === 'deposit') {
+                    document.querySelectorAll('.nav-item')[2].click(); // Переход на вкладку Баланс
+                }
+            });
+            return;
+        }
+
+        tg.showConfirm(`Подтверждаете покупку тарифа «${name}» за ${price} ₽?`, function(confirmed) {
+            if (confirmed) {
+                // Здесь должен быть API запрос к бэкенду. Имитируем успех:
+                tg.HapticFeedback.notificationOccurred('success');
+                tg.showAlert(`Тариф «${name}» успешно приобретен!`);
+                // В реальном приложении после покупки нужно запросить обновленные данные с сервера
+            }
+        });
+    }
+
+    // Запуск рендеринга при загрузке
+    renderUserData();
+    renderBalance();
+    renderSubscriptions();
+    renderPlans();
+    renderTransactions();
+
+</script>
 </body>
 </html>
