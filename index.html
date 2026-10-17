@@ -378,15 +378,12 @@
 <script>
     // Инициализация Telegram Web App
     const tg = window.Telegram.WebApp;
-    
-    // Расширяем на весь экран
     tg.expand();
     
-    // Устанавливаем цвета хеадера и фона из темы ТГ
-    // tg.setHeaderColor('secondary_bg_color');
-    // tg.setBackgroundColor('bg_color');
+    // Жестко задаем ваши фирменные цвета, игнорируя синюю/темную тему ТГ
+    tg.setHeaderColor('#1c1915'); 
+    tg.setBackgroundColor('#14120f');
 
-    // Сообщаем ТГ, что приложение готово
     tg.ready();
 
     // ==========================================
