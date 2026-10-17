@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Личный кабинет VPN - Подписки</title>
+    <title>Личный кабинет VPN</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -26,6 +26,20 @@
             padding-bottom: 90px;
         }
 
+        /* --- Стили для переключения страниц --- */
+        .page {
+            display: none; /* Скрываем все страницы по умолчанию */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .page.active {
+            display: block; /* Показываем только активную */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Общие стили шапки и контейнера --- */
         .header {
             display: flex;
             justify-content: space-between;
@@ -34,313 +48,207 @@
             border-bottom: 1px solid var(--border-color);
             background-color: #12141D;
         }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
+        .header-left { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 600; }
         .header-icon {
-            width: 24px;
-            height: 24px;
-            background-color: #0EA5E9;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
+            width: 24px; height: 24px; background-color: #0EA5E9; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
         }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            color: var(--text-muted);
-        }
-
+        .header-right { display: flex; align-items: center; gap: 16px; color: var(--text-muted); }
         .lang-selector {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 14px;
+            display: flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px; border-radius: 12px; font-size: 14px;
         }
+        .container { padding: 24px 16px; }
 
-        .container {
-            padding: 24px 16px;
+        /* --- Стили элементов контента --- */
+        .greeting { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+        .sub-greeting {
+            color: var(--text-muted); font-size: 15px; margin-bottom: 40px;
+            display: flex; align-items: center; gap: 10px;
         }
-
-        /* Заголовок страницы */
-        .page-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-top: 0;
-            margin-bottom: 24px;
+        .badge {
+            background-color: rgba(29, 58, 138, 0.4); border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93C5FD; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;
         }
+        .page-title { font-size: 24px; font-weight: 700; margin-top: 0; margin-bottom: 24px; }
 
-        /* Основная карточка тарифа */
         .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 32px 24px 24px;
-            text-align: center;
-            margin-bottom: 16px;
-            position: relative;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 20px; padding: 32px 24px 24px; text-align: center;
+            margin-bottom: 16px; position: relative;
         }
-
         .card-icon {
-            width: 48px;
-            height: 48px;
-            border: 1px solid rgba(255, 159, 67, 0.2);
-            color: var(--accent);
-            border-radius: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            margin-bottom: 16px;
-            position: absolute;
-            top: -24px;
-            left: 50%;
-            transform: translateX(-50%);
+            width: 48px; height: 48px; border: 1px solid rgba(255, 159, 67, 0.2);
+            color: var(--accent); border-radius: 14px; display: inline-flex;
+            align-items: center; justify-content: center; font-size: 20px;
+            position: absolute; top: -24px; left: 50%; transform: translateX(-50%);
             background-color: #1A1A1A;
         }
-
-        .card-title {
-            font-size: 22px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            margin-top: 8px;
-        }
-
-        .card-subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-
+        .card-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; margin-top: 8px; }
+        .card-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
         .price-badge {
-            border: 1px solid rgba(255, 159, 67, 0.3);
-            color: var(--accent);
-            padding: 8px 24px;
-            border-radius: 12px;
-            font-size: 20px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 28px;
+            border: 1px solid rgba(255, 159, 67, 0.3); color: var(--accent);
+            padding: 8px 24px; border-radius: 12px; font-size: 20px; font-weight: 600;
+            display: inline-block; margin-bottom: 28px;
         }
-
-        .stats {
-            display: flex;
-            justify-content: center;
-            gap: 32px;
-            margin-bottom: 24px;
-        }
-
-        .stat-item h3 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .stat-item p {
-            margin: 4px 0 0 0;
-            color: var(--text-muted);
-            font-size: 13px;
-        }
-
-        /* Блок баланса внутри карточки */
+        .stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 24px; }
+        .stat-item h3 { margin: 0; font-size: 28px; font-weight: 700; }
+        .stat-item p { margin: 4px 0 0 0; color: var(--text-muted); font-size: 13px; }
+        
         .inner-balance {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 16px;
-            text-align: left;
-            margin-bottom: 16px;
+            background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px; padding: 16px; text-align: left; margin-bottom: 16px;
         }
-
-        .balance-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
-
-        .balance-label {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-
-        .balance-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--accent);
-        }
-
-        .balance-hint {
-            color: var(--accent);
-            font-size: 13px;
-        }
-
+        .balance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .balance-label { color: var(--text-muted); font-size: 14px; }
+        .balance-value { font-size: 15px; font-weight: 600; color: var(--accent); }
+        .balance-hint { color: var(--accent); font-size: 13px; }
         .btn-orange {
-            background-color: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 14px;
-            padding: 16px;
-            width: 100%;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            background-color: var(--accent); color: #000; border: none; border-radius: 14px;
+            padding: 16px; width: 100%; font-size: 16px; font-weight: 600; cursor: pointer;
         }
-
-        /* Кнопка с пунктиром */
         .dashed-btn {
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 18px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 16px;
-            cursor: pointer;
+            border: 1px dashed rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 18px;
+            text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 16px; cursor: pointer;
         }
+        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; position: relative; }
+        .grid-card-header { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 14px; margin-bottom: 16px; }
+        .grid-card-arrow { position: absolute; right: 16px; top: 16px; color: rgba(255, 255, 255, 0.2); font-size: 12px; }
+        .grid-card-value { font-size: 24px; font-weight: 600; }
+        .grid-card-value.blue { color: var(--blue-accent); }
+        .grid-card-sub { color: var(--blue-accent); font-size: 13px; margin-top: 4px; }
 
-        /* Нижняя навигация */
+        /* --- Навигация --- */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #12141D;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 8px;
-            padding-bottom: calc(12px + env(safe-area-inset-bottom));
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0; background-color: #12141D;
+            border-top: 1px solid var(--border-color); display: flex; justify-content: space-around;
+            padding: 12px 8px; padding-bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 100;
         }
-
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            gap: 6px;
-            padding: 8px 16px;
-            border-radius: 14px;
-            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; color: var(--text-muted);
+            font-size: 11px; gap: 6px; padding: 8px 16px; border-radius: 14px; cursor: pointer;
+            transition: 0.2s;
         }
-
         .nav-item.active {
-            background-color: rgba(29, 58, 138, 0.3);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background-color: rgba(29, 58, 138, 0.3); border: 1px solid rgba(59, 130, 246, 0.3);
             color: var(--blue-accent);
         }
-        
-        .nav-icon {
-            font-size: 20px;
-            line-height: 1;
-        }
+        .nav-icon { font-size: 20px; line-height: 1; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="header-left">
-            <div class="header-icon">👻</div>
-            Ghost VPN
-        </div>
-        <div class="header-right">
-            <span>🔔</span>
-            <div class="lang-selector">🇷🇺 RU ⌄</div>
-            <span>≡</span>
+        <div class="header-left"><div class="header-icon">👻</div>Ghost VPN</div>
+        <div class="header-right"><span>🔔</span><div class="lang-selector">🇷🇺 RU ⌄</div><span>≡</span></div>
+    </div>
+
+    <!-- ЭКРАН 1: ГЛАВНАЯ (active по умолчанию) -->
+    <div id="page-home" class="page active">
+        <div class="container">
+            <div class="greeting">Добро пожаловать, <span id="userName">Гость</span>!</div>
+            <div class="sub-greeting">Ваша подписка <span class="badge">★ Base</span></div>
+            
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Пробная подписка</div>
+                <div class="card-subtitle">Начните с пробной подписки</div>
+                <div class="price-badge">1 ₽</div>
+                <div class="stats">
+                    <div class="stat-item"><h3>3</h3><p>дней</p></div>
+                    <div class="stat-item"><h3>5</h3><p>ГБ</p></div>
+                    <div class="stat-item"><h3>5</h3><p>устройств</p></div>
+                </div>
+                <div class="inner-balance">
+                    <div class="balance-row"><span class="balance-label">Текущий баланс</span><span class="balance-value">0.00 ₽</span></div>
+                    <div class="balance-hint">Пополните баланс для активации</div>
+                </div>
+                <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">Пополнить баланс</button>
+            </div>
+
+            <div class="dashed-btn" onclick="switchPage('page-subscriptions', document.getElementById('nav-sub'))">Посмотреть тарифы и купить подписку</div>
+
+            <div class="grid-cards">
+                <div class="grid-card"><div class="grid-card-header"><span>💳</span> Баланс</div><div class="grid-card-arrow">ᐳ</div><div class="grid-card-value blue">0.00 ₽</div></div>
+                <div class="grid-card"><div class="grid-card-header"><span>👥</span> Рефералы</div><div class="grid-card-arrow">ᐳ</div><div class="grid-card-value">0</div><div class="grid-card-sub">+0.00 ₽</div></div>
+            </div>
         </div>
     </div>
 
-    <div class="container">
-        
-        <!-- Заголовок раздела -->
-        <h1 class="page-title">Мои подписки</h1>
-        
-        <!-- Карточка подписки -->
-        <div class="card" style="margin-top: 24px;">
-            <div class="card-icon">⚡</div>
-            <div class="card-title">Пробная подписка</div>
-            <div class="card-subtitle">Начните с пробной подписки</div>
+    <!-- ЭКРАН 2: ПОДПИСКИ -->
+    <div id="page-subscriptions" class="page">
+        <div class="container">
+            <h1 class="page-title">Мои подписки</h1>
             
-            <div class="price-badge">1 ₽</div>
+            <div class="card" style="margin-top: 24px;">
+                <div class="card-icon">⚡</div>
+                <div class="card-title">Пробная подписка</div>
+                <div class="card-subtitle">Начните с пробной подписки</div>
+                <div class="price-badge">1 ₽</div>
+                <div class="stats">
+                    <div class="stat-item"><h3>3</h3><p>дней</p></div>
+                    <div class="stat-item"><h3>5</h3><p>ГБ</p></div>
+                    <div class="stat-item"><h3>5</h3><p>устройств</p></div>
+                </div>
+                <div class="inner-balance">
+                    <div class="balance-row"><span class="balance-label">Текущий баланс</span><span class="balance-value">0.00 ₽</span></div>
+                    <div class="balance-hint">Пополните баланс для активации</div>
+                </div>
+                <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">Пополнить баланс</button>
+            </div>
             
-            <div class="stats">
-                <div class="stat-item">
-                    <h3>3</h3>
-                    <p>дней</p>
-                </div>
-                <div class="stat-item">
-                    <h3>5</h3>
-                    <p>ГБ</p>
-                </div>
-                <div class="stat-item">
-                    <h3>5</h3>
-                    <p>устройств</p>
-                </div>
-            </div>
-
-            <div class="inner-balance">
-                <div class="balance-row">
-                    <span class="balance-label">Текущий баланс</span>
-                    <span class="balance-value">0.00 ₽</span>
-                </div>
-                <div class="balance-hint">Пополните баланс для активации</div>
-            </div>
-
-            <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">
-                Пополнить баланс
-            </button>
+            <div class="dashed-btn">Посмотреть тарифы и купить подписку</div>
         </div>
-
-        <!-- Кнопка Тарифы -->
-        <div class="dashed-btn">
-            Посмотреть тарифы и купить подписку
-        </div>
-
     </div>
 
-    <!-- Навигация -->
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
     <div class="bottom-nav">
-        <!-- Замените href на названия ваших будущих HTML-файлов -->
-        <a href="index.html" class="nav-item" style="text-decoration: none;">
-            <span class="nav-icon">🏠</span>
-            <span>Главная</span>
-        </a>
-        <a href="subscriptions.html" class="nav-item active" style="text-decoration: none;">
-            <span class="nav-icon">✨</span>
-            <span>Подписка</span>
-        </a>
-        <a href="balance.html" class="nav-item" style="text-decoration: none;">
-            <span class="nav-icon">💳</span>
-            <span>Баланс</span>
-        </a>
-        <a href="referrals.html" class="nav-item" style="text-decoration: none;">
-            <span class="nav-icon">👥</span>
-            <span>Рефералы</span>
-        </a>
-        <a href="support.html" class="nav-item" style="text-decoration: none;">
-            <span class="nav-icon">💬</span>
-            <span>Поддержка</span>
-        </a>
+        <!-- При клике вызываем функцию switchPage с ID нужной страницы -->
+        <div class="nav-item active" id="nav-home" onclick="switchPage('page-home', this)">
+            <span class="nav-icon">🏠</span><span>Главная</span>
+        </div>
+        <div class="nav-item" id="nav-sub" onclick="switchPage('page-subscriptions', this)">
+            <span class="nav-icon">✨</span><span>Подписка</span>
+        </div>
+        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
+            <span class="nav-icon">💳</span><span>Баланс</span>
+        </div>
+        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
+            <span class="nav-icon">👥</span><span>Рефералы</span>
+        </div>
+        <div class="nav-item" onclick="Telegram.WebApp.showAlert('Раздел в разработке')">
+            <span class="nav-icon">💬</span><span>Поддержка</span>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Подстановка имени
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
+        }
+
+        // Функция переключения страниц
+        function switchPage(pageId, navElement) {
+            // 1. Скрываем все страницы (убираем класс active)
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 2. Убираем выделение (класс active) со всех кнопок меню
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+
+            // 3. Показываем нужную страницу
+            document.getElementById(pageId).classList.add('active');
+            
+            // 4. Делаем активной ту кнопку меню, на которую нажали
+            navElement.classList.add('active');
+        }
     </script>
 </body>
 </html>
