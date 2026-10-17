@@ -48,6 +48,10 @@
             height: 24px;
             background-color: #0EA5E9;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
         }
 
         .header-right {
@@ -71,7 +75,33 @@
             padding: 24px 16px;
         }
 
-        /* Карточка тарифа */
+        /* Блок приветствия */
+        .greeting {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .sub-greeting {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 40px; /* Отступ до карточки, чтобы вместилась иконка-молния */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background-color: rgba(29, 58, 138, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93C5FD;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Основная карточка тарифа */
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -94,7 +124,7 @@
             font-size: 20px;
             margin-bottom: 16px;
             position: absolute;
-            top: -24px;
+            top: -24px; /* Сдвиг иконки вверх на границу карточки */
             left: 50%;
             transform: translateX(-50%);
             background-color: #1A1A1A;
@@ -143,7 +173,7 @@
             font-size: 13px;
         }
 
-        /* Блок внутри тарифа для баланса */
+        /* Блок баланса внутри карточки */
         .inner-balance {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -188,7 +218,7 @@
             cursor: pointer;
         }
 
-        /* Кнопка "Посмотреть тарифы" */
+        /* Кнопка с пунктиром */
         .dashed-btn {
             border: 1px dashed rgba(255, 255, 255, 0.1);
             border-radius: 16px;
@@ -200,7 +230,7 @@
             cursor: pointer;
         }
 
-        /* Карточки Баланс и Рефералы */
+        /* Нижние карточки Баланс и Рефералы */
         .grid-cards {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -259,6 +289,7 @@
             justify-content: space-around;
             padding: 12px 8px;
             padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            z-index: 100;
         }
 
         .nav-item {
@@ -274,6 +305,7 @@
 
         .nav-item.active {
             background-color: rgba(29, 58, 138, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.3);
             color: var(--blue-accent);
         }
         
@@ -287,7 +319,7 @@
 
     <div class="header">
         <div class="header-left">
-            <div class="header-icon"></div>
+            <div class="header-icon">👻</div>
             Ghost VPN
         </div>
         <div class="header-right">
@@ -299,8 +331,14 @@
 
     <div class="container">
         
+        <!-- Приветствие -->
+        <div class="greeting">Добро пожаловать, <span id="userName">Nachyn</span>!</div>
+        <div class="sub-greeting">
+            Ваша подписка <span class="badge">★ Base</span>
+        </div>
+        
         <!-- Карточка подписки -->
-        <div class="card" style="margin-top: 24px;">
+        <div class="card">
             <div class="card-icon">⚡</div>
             <div class="card-title">Пробная подписка</div>
             <div class="card-subtitle">Начните с пробной подписки</div>
@@ -330,7 +368,7 @@
                 <div class="balance-hint">Пополните баланс для активации</div>
             </div>
 
-            <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие оплаты')">
+            <button class="btn-orange" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa')">
                 Пополнить баланс
             </button>
         </div>
@@ -340,7 +378,7 @@
             Посмотреть тарифы и купить подписку
         </div>
 
-        <!-- Нижние карточки -->
+        <!-- Карточки Баланс и Рефералы -->
         <div class="grid-cards">
             <div class="grid-card">
                 <div class="grid-card-header">
@@ -389,6 +427,11 @@
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+
+        // Подставляем имя из Telegram, если оно доступно
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name;
+        }
     </script>
 </body>
 </html>
