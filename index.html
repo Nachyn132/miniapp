@@ -236,7 +236,7 @@
         .tx-amount.minus { color: var(--text); font-weight: 600; }
 
         /* ==========================================
-           ПЛАВАЮЩЕЕ МЕНЮ НАВИГАЦИИ (Glassmorphism)
+           ПЛАВАЮЩЕЕ МЕНЮ НАВИГАЦИИ (С ползунком)
            ========================================== */
         .bottom-nav {
             display: flex;
@@ -253,7 +253,24 @@
             right: 16px;
             padding: 6px;
             z-index: 100;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            /* Важно для позиционирования ползунка */
+            position: fixed; 
+        }
+
+        /* Тот самый подвижный ползунок */
+        .nav-indicator {
+            position: absolute;
+            top: 6px;
+            bottom: 6px;
+            left: 0;
+            background: rgba(217, 123, 63, 0.1); /* Полупрозрачный оранжевый фон */
+            border: 1px solid var(--accent);
+            border-radius: 18px;
+            z-index: 0;
+            /* Плавная анимация движения и изменения ширины */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none; /* Пропускает клики сквозь себя на кнопки */
         }
         
         .nav-item {
@@ -265,10 +282,12 @@
             color: var(--text3);
             text-decoration: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
             padding: 10px 0;
-            border-radius: 18px; 
-            border: 1px solid transparent; 
+            position: relative;
+            z-index: 1; /* Кнопки находятся поверх ползунка */
+            
+            /* Защита от выделения текста при свайпе */
             user-select: none;
             -webkit-user-select: none;
         }
@@ -276,10 +295,9 @@
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item span { font-size: 10px; font-weight: 500; }
         
+        /* Теперь активная кнопка просто меняет цвет текста (а фон дает ползунок под ней) */
         .nav-item.active { 
             color: var(--accent); 
-            background: rgba(217, 123, 63, 0.1); 
-            border: 1px solid var(--accent); 
         }
         
         .page-header {
@@ -378,8 +396,10 @@
     </div>
 
     <!-- Навигация -->
-    <div class="bottom-nav">
-        <!-- Кнопка "Главная" с иконкой дома -->
+    <div class="bottom-nav" id="bottomNav">
+        <!-- Подвижный ползунок выделения -->
+        <div class="nav-indicator" id="navIndicator"></div>
+
         <a class="nav-item active" onclick="switchTab('view-home', this)">
             <i class="fas fa-house"></i>
             <span>Главная</span>
@@ -442,6 +462,14 @@
         
         document.getElementById(viewId).classList.add('active');
         navElement.classList.add('active');
+        
+        // --- Логика движения ползунка ---
+        const indicator = document.getElementById('navIndicator');
+        if (indicator) {
+            // Двигаем ползунок на позицию нажатой кнопки и берем ее ширину
+            indicator.style.transform = `translateX(${navElement.offsetLeft}px)`;
+            indicator.style.width = `${navElement.offsetWidth}px`;
+        }
         
         tg.HapticFeedback.selectionChanged();
     }
@@ -585,11 +613,79 @@
         });
     }
 
+    // ==========================================
+    // ЛОГИКА СВАЙПА ПО НИЖНЕЙ ПАНЕЛИ
+    // ==========================================
+    const navBar = document.getElementById('bottomNav');
+    const navItems = document.querySelectorAll('.nav-item');
+    let startX = 0;
+    let endX = 0;
+    
+    function handleSwipe() {
+        if (!startX || !endX) return;
+        const diffX = startX - endX;
+        
+        // Если жест был достаточно длинным (длиннее 30px)
+        if (Math.abs(diffX) > 30) { 
+            // Находим индекс текущей активной вкладки
+            const currentIndex = Array.from(navItems).findIndex(item => item.classList.contains('active'));
+            
+            if (diffX > 0 && currentIndex < navItems.length - 1) {
+                // Свайп влево -> переключаем на следующую кнопку (имитируем клик)
+                navItems[currentIndex + 1].click();
+            } else if (diffX < 0 && currentIndex > 0) {
+                // Свайп вправо -> переключаем на предыдущую кнопку
+                navItems[currentIndex - 1].click();
+            }
+        }
+        startX = 0;
+        endX = 0;
+    }
+
+    // Обработчики касания (для мобильных телефонов)
+    navBar.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+    navBar.addEventListener('touchmove', e => { endX = e.touches[0].clientX; }, {passive: true});
+    navBar.addEventListener('touchend', () => { handleSwipe(); });
+
+    // Обработчики мыши (чтобы можно было протестировать с ПК в браузере)
+    let isDragging = false;
+    navBar.addEventListener('mousedown', e => { isDragging = true; startX = e.clientX; });
+    navBar.addEventListener('mousemove', e => { if(isDragging) endX = e.clientX; });
+    navBar.addEventListener('mouseup', () => { if(isDragging) { isDragging = false; handleSwipe(); }});
+    navBar.addEventListener('mouseleave', () => { isDragging = false; });
+
+    // Устанавливаем ползунок на первую кнопку при загрузке страницы
+    window.addEventListener('DOMContentLoaded', () => {
+        const activeNav = document.querySelector('.nav-item.active');
+        if(activeNav) {
+            const indicator = document.getElementById('navIndicator');
+            indicator.style.transform = `translateX(${activeNav.offsetLeft}px)`;
+            indicator.style.width = `${activeNav.offsetWidth}px`;
+        }
+    });
+
+    // Также поправляем ползунок, если телефон перевернут (сменилась ширина экрана)
+    window.addEventListener('resize', () => {
+        const activeNav = document.querySelector('.nav-item.active');
+        if(activeNav) {
+            const indicator = document.getElementById('navIndicator');
+            indicator.style.transform = `translateX(${activeNav.offsetLeft}px)`;
+            indicator.style.width = `${activeNav.offsetWidth}px`;
+        }
+    });
+
+    // Вызовы отрисовки
     renderUserData();
     renderBalance();
     renderSubscriptions();
     renderPlans();
     renderTransactions();
+
+    // Даем микро-задержку при старте для точного вычисления позиции ползунка на iOS
+    setTimeout(() => {
+        const activeNav = document.querySelector('.nav-item.active');
+        if(activeNav) activeNav.click();
+    }, 100);
 
 </script>
 </body>
