@@ -212,6 +212,34 @@
         .summary-row.total { font-size: 16px; color: var(--text); font-weight: 600; margin-top: 16px; align-items: center; }
         .summary-row.total .val { color: var(--blue); font-size: 26px; font-family: 'Fraunces', serif; }
 
+        /* Сетка кнопок сумм пополнения */
+        .deposit-amounts-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        .amount-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 0;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .amount-btn:active {
+            background: rgba(255,255,255,0.05);
+            border-color: var(--blue);
+        }
+        .amount-btn .val { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+        .amount-btn .cur { font-size: 12px; color: var(--text3); }
+        
+        /* Убираем стрелочки внутри поля ввода чисел */
+        input[type="number"]::-webkit-inner-spin-button, 
+        input[type="number"]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; margin: 0; 
+        }
+
         @media (min-width: 768px) {
             .wrap { max-width: 800px; padding: 32px 24px; }
             .bottom-nav { max-width: 800px; padding: 10px; border-radius: 28px; bottom: 24px; width: calc(100% - 48px); }
@@ -266,7 +294,7 @@
 
                 <div class="card">
                     <div class="card-title-small">Пополнение баланса</div>
-                    <div class="payment-method" onclick="Telegram.WebApp.showAlert('Открытие ЮKassa для оплаты')">
+                    <div class="payment-method" onclick="openDeposit()">
                         <div class="payment-header">
                             <div class="payment-icon"><i class="fas fa-credit-card"></i></div>
                             <div class="payment-title">ЮKassa</div>
@@ -443,6 +471,51 @@
                 </div>
                 
                 <button class="btn btn-primary" style="height: 52px; font-size: 16px;" onclick="confirmPurchase()">Купить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ПОПОЛНЕНИЯ БАЛАНСА -->
+    <div id="depositModal" class="checkout-modal">
+        <div class="wrap">
+            <div class="checkout-header-row" style="border-bottom: none; margin-bottom: 24px; padding-bottom: 0;">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div class="payment-icon" style="width: 48px; height: 48px; font-size: 20px;">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 18px; font-weight: 600; color: var(--text);">ЮKassa</div>
+                        <div style="font-size: 13px; color: var(--text3); margin-top: 4px;">1 – 100 000 ₽</div>
+                    </div>
+                </div>
+                <div class="checkout-back" onclick="closeDeposit()"><i class="fas fa-arrow-left"></i> Назад</div>
+            </div>
+
+            <div class="card-title-small" style="color:var(--text); margin-bottom:12px;">Введите сумму</div>
+            
+            <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                <div style="position: relative; flex: 1;">
+                    <input type="number" id="depositAmount" class="form-input" placeholder="0" style="width: 100%; padding-right: 32px; font-size: 16px; background: transparent;">
+                    <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 16px; pointer-events: none;">₽</span>
+                </div>
+                <button id="depositBtn" class="btn btn-dark" style="padding: 0 24px; font-size: 14px; border: none; background: rgba(255,255,255,0.05); color: var(--text3);" disabled onclick="processDeposit()">
+                    Пополнить
+                </button>
+            </div>
+
+            <div class="deposit-amounts-grid">
+                <div class="amount-btn" onclick="setDepositAmount(100)">
+                    <div class="val">100</div><div class="cur">₽</div>
+                </div>
+                <div class="amount-btn" onclick="setDepositAmount(300)">
+                    <div class="val">300</div><div class="cur">₽</div>
+                </div>
+                <div class="amount-btn" onclick="setDepositAmount(500)">
+                    <div class="val">500</div><div class="cur">₽</div>
+                </div>
+                <div class="amount-btn" onclick="setDepositAmount(1000)">
+                    <div class="val">1000</div><div class="cur">₽</div>
+                </div>
             </div>
         </div>
     </div>
@@ -737,6 +810,67 @@
             indicator.style.width = `${activeNav.offsetWidth}px`;
         }
     });
+
+    // ==========================================
+    // ЛОГИКА ПОПОЛНЕНИЯ БАЛАНСА
+    // ==========================================
+    function openDeposit() {
+        document.getElementById('depositAmount').value = '';
+        checkDepositInput();
+        document.getElementById('depositModal').classList.add('show');
+        tg.HapticFeedback.impactOccurred('light');
+    }
+
+    function closeDeposit() {
+        document.getElementById('depositModal').classList.remove('show');
+    }
+
+    function setDepositAmount(amount) {
+        document.getElementById('depositAmount').value = amount;
+        checkDepositInput();
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    function checkDepositInput() {
+        const val = parseInt(document.getElementById('depositAmount').value) || 0;
+        const btn = document.getElementById('depositBtn');
+        
+        if (val > 0) {
+            btn.className = 'btn btn-primary'; // Загорается синим
+            btn.disabled = false;
+            btn.style.color = '#ffffff';
+        } else {
+            btn.className = 'btn btn-dark'; // Становится тусклой
+            btn.disabled = true;
+            btn.style.color = 'var(--text3)';
+        }
+    }
+
+    // Слушаем ввод с клавиатуры
+    document.getElementById('depositAmount').addEventListener('input', checkDepositInput);
+
+    function processDeposit() {
+        const amount = parseInt(document.getElementById('depositAmount').value);
+        if (amount > 0) {
+            // Имитация успешного пополнения (здесь должен быть вызов API ЮKassa)
+            userBalance += amount;
+            
+            // Добавляем запись в историю
+            transactions.unshift({
+                id: Date.now(),
+                desc: 'Пополнение баланса',
+                amount: amount,
+                date: Date.now()
+            });
+            
+            renderBalance();
+            renderTransactions();
+            
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert(`Баланс успешно пополнен на ${amount} ₽!`);
+            closeDeposit();
+        }
+    }
 
     renderBalance();
     renderSubscriptions();
