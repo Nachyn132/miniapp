@@ -240,6 +240,109 @@
             -webkit-appearance: none; margin: 0; 
         }
 
+        /* ==========================================
+           ОКНО УСПЕШНОГО СОЗДАНИЯ ССЫЛКИ
+           ========================================== */
+        .success-card {
+            background: var(--bg2);
+            border: 1px solid var(--ok);
+            border-radius: 24px;
+            padding: 40px 24px 32px 24px;
+            text-align: center;
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.15); /* Зеленое свечение */
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+        
+        .success-icon-circle {
+            width: 64px;
+            height: 64px;
+            background: var(--ok);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            margin: 0 auto 24px auto;
+        }
+        
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+        
+        .success-desc {
+            font-size: 14px;
+            color: var(--text2);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+        
+        .btn-green-glow {
+            background: var(--ok);
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); /* Тень под кнопкой */
+            margin-bottom: 24px;
+            transition: 0.2s;
+        }
+        .btn-green-glow:active { transform: scale(0.98); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); }
+        
+        .link-copy-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+        .link-copy-group input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            color: var(--text2);
+            font-size: 13px;
+            outline: none;
+            text-overflow: ellipsis;
+        }
+        .link-copy-group button {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text2);
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .link-copy-group button:active { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+        
+        .success-back {
+            color: var(--text3);
+            font-size: 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+        .success-back:hover { color: var(--text); }
+
         @media (min-width: 768px) {
             .wrap { max-width: 800px; padding: 32px 24px; }
             .bottom-nav { max-width: 800px; padding: 10px; border-radius: 28px; bottom: 24px; width: calc(100% - 48px); }
@@ -515,6 +618,32 @@
                 </div>
                 <div class="amount-btn" onclick="setDepositAmount(1000)">
                     <div class="val">1000</div><div class="cur">₽</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ССЫЛКА НА ОПЛАТУ ГОТОВА -->
+    <div id="paymentLinkModal" class="checkout-modal">
+        <div class="wrap" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 24px;">
+            <div class="success-card">
+                <div class="success-icon-circle">
+                    <i class="fas fa-check"></i>
+                </div>
+                <div class="success-title">Ссылка на оплату готова</div>
+                <div class="success-desc">Счёт создан. Чтобы завершить оплату, нажмите большую кнопку ниже.</div>
+                
+                <button class="btn-green-glow" onclick="goToPayment()">
+                    <i class="fas fa-external-link-alt" style="font-size: 14px;"></i> Перейти к оплате
+                </button>
+                
+                <div class="link-copy-group">
+                    <input type="text" id="generatedPaymentLink" readonly>
+                    <button onclick="copyPaymentLink()"><i class="far fa-copy"></i></button>
+                </div>
+                
+                <div class="success-back" onclick="closePaymentLinkModal()">
+                    <i class="fas fa-arrow-left"></i> Назад
                 </div>
             </div>
         </div>
@@ -852,24 +981,32 @@
     function processDeposit() {
         const amount = parseInt(document.getElementById('depositAmount').value);
         if (amount > 0) {
-            // Имитация успешного пополнения (здесь должен быть вызов API ЮKassa)
-            userBalance += amount;
-            
-            // Добавляем запись в историю
-            transactions.unshift({
-                id: Date.now(),
-                desc: 'Пополнение баланса',
-                amount: amount,
-                date: Date.now()
-            });
-            
-            renderBalance();
-            renderTransactions();
-            
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert(`Баланс успешно пополнен на ${amount} ₽!`);
+            // 1. Закрываем окно ввода суммы
             closeDeposit();
+            
+            // 2. Генерируем "ссылку на оплату" (здесь в будущем будет ответ от API ЮKassa)
+            const fakeLink = `https://yookassa.ru/my/i/AQVasIhWqs${Date.now().toString().slice(-5)}`;
+            document.getElementById('generatedPaymentLink').value = fakeLink;
+            
+            // 3. Открываем зеленое окно успеха
+            document.getElementById('paymentLinkModal').classList.add('show');
+            tg.HapticFeedback.notificationOccurred('success');
         }
+    }
+
+    function closePaymentLinkModal() {
+        document.getElementById('paymentLinkModal').classList.remove('show');
+    }
+
+    function copyPaymentLink() {
+        const link = document.getElementById('generatedPaymentLink').value;
+        copyText(link, 'Ссылка на оплату скопирована!');
+    }
+
+    function goToPayment() {
+        const link = document.getElementById('generatedPaymentLink').value;
+        // Открываем ссылку во внешнем браузере Telegram
+        tg.openLink(link);
     }
 
     renderBalance();
